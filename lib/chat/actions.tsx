@@ -4,13 +4,13 @@ import {
   createStreamableValue,
   getMutableAIState,
 } from "ai/rsc";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@nextui-org/react";
 import { streamText } from "ai";
+import { google } from "@ai-sdk/google";
 
 import { nanoid } from "../utils";
 
 import { isRegistered } from "./registered";
-import { google } from "@ai-sdk/google";
 
 const genAI = new GoogleGenerativeAI(
   process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? ""
