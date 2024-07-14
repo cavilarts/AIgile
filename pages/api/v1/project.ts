@@ -2,15 +2,18 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
+  const { id } = req.query;
 
   switch (method) {
     case "GET":
-      // Get data from your database
-      res.status(200).json({ id: 1, name: "Project Name" });
+      if (!id) {
+        res.status(400).json({ error: "Missing project id" });
+      } else {
+        res.status(200).json({ id: id, name: "Project Name" });
+      }
       break;
     case "POST":
-      // Create a new record in your database
-      res.status(201).json({ id: 2, name: "New Project Name" });
+      res.status(201).json({ id: id, name: "New Project Name" });
       break;
     default:
       res.setHeader("Allow", ["GET", "POST"]);
