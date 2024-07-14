@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import { VisuallyHidden } from "@react-aria/visually-hidden";
-import { SwitchProps, useSwitch } from "@nextui-org/switch";
+import { SwitchProps, useSwitch } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 import clsx from "clsx";
 
@@ -48,7 +48,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
         className: clsx(
           "px-px transition-opacity hover:opacity-80 cursor-pointer",
           className,
-          classNames?.base,
+          classNames?.base
         ),
       })}
     >
@@ -70,7 +70,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
               "px-0",
               "mx-0",
             ],
-            classNames?.wrapper,
+            classNames?.wrapper
           ),
         })}
       >

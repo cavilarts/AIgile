@@ -1,31 +1,41 @@
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
 import {
   Navbar,
-  NavbarBrand,
   NavbarContent,
+  NavbarBrand,
   NavbarItem,
-  NavbarMenu,
   NavbarMenuToggle,
-} from "@nextui-org/navbar";
+  NavbarMenu,
+  Button,
+  Link,
+} from "@nextui-org/react";
 import { useState } from "react";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <Navbar onMenuOpenChange={setIsMenuOpen}>
+    <Navbar
+      onClick={() => setIsMenuOpen((current) => !current)}
+      onMenuOpenChange={setIsMenuOpen}
+      onTouchEnd={() => setIsMenuOpen((current) => !current)}
+    >
       <NavbarContent>
         <NavbarBrand>AIgile</NavbarBrand>
         <NavbarContent className="hidden sm:flex gap-4" justify="end">
           <NavbarItem>
-            <Link href="/about">About</Link>
+            <Link className="text-sky-400" href="/about">
+              About
+            </Link>
           </NavbarItem>
           <NavbarItem>
-            <Link href="/features">Services</Link>
+            <Link className="text-sky-400" href="/features">
+              Services
+            </Link>
           </NavbarItem>
           <NavbarItem>
-            <Link href="/pricing">Pricing</Link>
+            <Link className="text-sky-400" href="/pricing">
+              Pricing
+            </Link>
           </NavbarItem>
           <NavbarItem>
             <Button as={Link} href="/sign-up" variant="flat">
@@ -43,18 +53,25 @@ export default function Header() {
         <NavbarItem>
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="w-10 h-10"
           />
         </NavbarItem>
       </NavbarContent>
       <NavbarMenu>
-        <NavbarItem>
-          <Link href="/about">About</Link>
+        <NavbarItem className="text-end">
+          <Link className="text-sky-400" href="/about">
+            About
+          </Link>
         </NavbarItem>
-        <NavbarItem>
-          <Link href="/features">Services</Link>
+        <NavbarItem className="text-end">
+          <Link className="text-sky-400" href="/features">
+            Services
+          </Link>
         </NavbarItem>
-        <NavbarItem>
-          <Link href="/pricing">Pricing</Link>
+        <NavbarItem className="text-end">
+          <Link className="text-sky-400" href="/pricing">
+            Pricing
+          </Link>
         </NavbarItem>
       </NavbarMenu>
     </Navbar>

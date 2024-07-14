@@ -1,10 +1,9 @@
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
+import { Button, Link } from "@nextui-org/react";
 
 export default function Hero() {
   return (
     <section className="flex h-full">
-      <div className="relative mx-auto max-w-screen-xl px-4 sm:px-6 lg:flex lg:flex-col lg:h-full lg:justify-center lg:items-center">
+      <div className="relative mx-auto max-w-screen-xl px-4 sm:px-6 flex flex-col h-full justify-center items-center">
         <h1 className="text-3xl font-extrabold sm:text-5xl text-left sm:text-center">
           Untangle Requirements with AIgile:
           <strong className="block font-extrabold text-rose-300">
@@ -19,7 +18,7 @@ export default function Hero() {
         <div className="mt-8 flex flex-wrap gap-4 text-center">
           <Button
             as={Link}
-            className="text-white font-bold"
+            className="text-white bg-sky-400 text-xl"
             color="primary"
             href="/chat"
             variant="solid"
