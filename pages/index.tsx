@@ -1,6 +1,5 @@
 import DefaultLayout from "@/layouts/default";
 import Hero from "@/components/Landing/Hero/Hero";
-import "./global.css";
 
 export const metadata = {
   title: "AI-gile",
