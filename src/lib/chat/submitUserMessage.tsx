@@ -47,7 +47,9 @@ export async function submitUserMessage(content: string) {
     try {
       const { textStream: newMessageStream } = await streamText({
         model: google("models/gemini-1.5-flash-latest"),
-        system: `You are a friendly assistance to get user requirements and transform them into actionable user stories in gherkin format (don't metion the word gherkin to the user).
+        system: `
+          You might speak the users language all the time.
+          You are a friendly assistance to get user requirements and transform them into actionable user stories in gherkin format (don't metion the word gherkin to the user). The user is going to write you on any language please continue answering in the language given after this promt.
           
           1. First you need to ask the project and first board name, if the user doesn't provide it, you can invent a creative one and suggest that to the user.
           2. If the user provides the project description you need to create the tasks given that description.
