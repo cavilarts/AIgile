@@ -1,3 +1,13 @@
+import PromptForm from "@/components/Chat/PromptForm";
+import { nanoid } from "@/lib";
+import { AI } from "@/lib/chat/actions";
+
 export default function ChatPage() {
-  return <section className="bg-black" />;
+  const id = nanoid();
+
+  return (
+    <AI initialAIState={{ id: id, interactions: [], messages: [] }}>
+      <PromptForm />
+    </AI>
+  );
 }
