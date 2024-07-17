@@ -9,7 +9,7 @@ import {
   createStreamableValue,
   createStreamableUI,
 } from "ai/rsc";
-import { isRegistered } from "./registered";
+// import { isRegistered } from "./registered";
 import { nanoid } from "@/lib/utils";
 
 export async function submitUserMessage(content: string) {
@@ -47,7 +47,19 @@ export async function submitUserMessage(content: string) {
     try {
       const { textStream: newMessageStream } = await streamText({
         model: google("models/gemini-1.5-flash-latest"),
-        system: aiState.get().content,
+        system: `You are a friendly assistance to get user requirements and transform them into actionable user stories in gherkin format (don't metion the word gherkin to the user).
+          
+          1. First you need to ask the project and first board name, if the user doesn't provide it, you can invent a creative one and suggest that to the user.
+          2. If the user provides the project description you need to create the tasks given that description.
+          3. You can help users to prioritize tasks and keep their team on the same page.
+          If the user does not provide clear details, you need to ask questions to get more information. get as much informed about the project as possible. before generating the user stories, you can ask the user to confirm if all the details are included.
+
+          Enforce the user to provides the following information.
+
+          - Project Name
+          - Board name
+          - requirements
+          And guide the user to find the needs to be solved, and based on that you can stop asking questions and display the generated tasks`,
         messages: history,
       });
       let textContent = "";
@@ -57,7 +69,6 @@ export async function submitUserMessage(content: string) {
         textStream.update(text);
 
         textContent += text;
-        console.log("content --------------------->", textContent);
         messageStream.update(<BotMessage content={textContent} />);
       }
 
