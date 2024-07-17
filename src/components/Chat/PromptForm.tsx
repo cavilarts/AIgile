@@ -6,11 +6,12 @@ import { useEnterSubmit } from "@/lib/hooks/useEnterSubmit";
 import { Button, Textarea } from "@nextui-org/react";
 import { useActions, useUIState } from "ai/rsc";
 import { ChangeEventHandler, useRef, useState } from "react";
+import UserMessage from "./UserMessage";
 
 export default function PromptForm() {
   const { formRef, onKeyDown } = useEnterSubmit();
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const { submitMessage } = useActions();
+  const { submitUserMessage } = useActions();
   const [, setMessages] = useUIState<typeof AI>();
   const [input, setInput] = useState("");
 
@@ -28,25 +29,27 @@ export default function PromptForm() {
       return;
     }
 
-    setMessages((prev) => ({
-      ...prev,
-      messages: [...prev, { id: nanoid(), content: message, from: "user" }],
-    }));
+    setMessages((currentMessages) => [
+      ...currentMessages,
+      {
+        id: nanoid(),
+        display: <UserMessage>{message}</UserMessage>,
+      },
+    ]);
 
     try {
-      const responseMessage = submitMessage(message);
-
-      setMessages((prev) => ({
-        ...prev,
-        messages: [...prev, responseMessage],
-      }));
+      const responseMessage = await submitUserMessage(message);
+      debugger;
+      setMessages((prev) => {
+        return prev ? [...prev, responseMessage] : [responseMessage];
+      });
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <form ref={formRef}>
+    <form ref={formRef} onSubmit={onSubmitForm}>
       <Textarea
         minRows={1}
         value={input}

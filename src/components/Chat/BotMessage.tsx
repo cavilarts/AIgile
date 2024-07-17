@@ -11,7 +11,7 @@ export default function BotMessage({ content }: BotMessageProps) {
   return (
     <Card>
       <Avatar name="Bot" />
-      <CardBody>Text</CardBody>
+      <CardBody>{content}</CardBody>
     </Card>
   );
 }

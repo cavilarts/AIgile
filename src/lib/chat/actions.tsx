@@ -8,10 +8,24 @@ import { nanoid } from "../utils";
 import { Chat } from "@/types";
 import { onGetUIState, onSetAIState } from "./onGetUIState";
 import { submitUserMessage } from "./submitUserMessage";
+import { Message } from "ai";
 
 const genAI = new GoogleGenerativeAI(
   process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? ""
 );
+
+export type AIState = {
+  chatId: string;
+  interactions?: string[];
+  messages: Message[];
+};
+
+export type UIState = {
+  id: string;
+  display: React.ReactNode;
+  spinner?: React.ReactNode;
+  attachments?: React.ReactNode;
+}[];
 
 export const AI = createAI({
   actions: {
@@ -24,7 +38,6 @@ export const AI = createAI({
     interactions: [],
   },
   onGetUIState: onGetUIState,
-  onSetAIState: onSetAIState,
 });
 
 export const getUIStateFromAIState = (aiState: Readonly<Chat>) => {

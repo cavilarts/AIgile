@@ -15,15 +15,20 @@ import { nanoid } from "@/lib/utils";
 export async function submitUserMessage(content: string) {
   "use server";
 
-  await isRegistered();
+  // await isRegistered();
 
   const aiState = getMutableAIState();
 
   aiState.update({
     ...aiState.get(),
-    id: nanoid(),
-    role: "user",
-    content: `${aiState.get().interactions.join("\n\n")}\n\n${content}`,
+    messages: [
+      ...aiState.get().messages,
+      {
+        id: nanoid(),
+        role: "user",
+        content: `${aiState.get().interactions.join("\n\n")}\n\n${content}`,
+      },
+    ],
   });
 
   const history = aiState
@@ -46,10 +51,13 @@ export async function submitUserMessage(content: string) {
         messages: history,
       });
       let textContent = "";
+      spinnerStream.done(null);
 
       for await (const text of newMessageStream) {
         textStream.update(text);
+
         textContent += text;
+        console.log("content --------------------->", textContent);
         messageStream.update(<BotMessage content={textContent} />);
       }
 
@@ -60,4 +68,11 @@ export async function submitUserMessage(content: string) {
       console.error(error);
     }
   })();
+
+  return {
+    id: nanoid(),
+    attachments: uiStream.value,
+    spinner: spinnerStream.value,
+    display: messageStream.value,
+  };
 }
