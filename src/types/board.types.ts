@@ -8,6 +8,7 @@ export type Task = {
   assignee?: string;
   priority: "low" | "medium" | "high";
   subtasks?: TaskId[];
+  status: string;
 };
 
 export type ColumnStatus = {
