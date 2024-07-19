@@ -10,6 +10,7 @@ export const metadata = {
 export default function IndexPage() {
   return (
     <DefaultLayout>
+      <div className="landing-bg w-screen h-screen fixed top-0 left-0" />
       <Hero />
     </DefaultLayout>
   );
