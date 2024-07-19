@@ -12,7 +12,7 @@ export default function PromptForm() {
   const { formRef, onKeyDown } = useEnterSubmit();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { submitUserMessage } = useActions();
-  const [, setMessages] = useUIState<typeof AI>();
+  const [messages, setMessages] = useUIState<typeof AI>();
   const [input, setInput] = useState("");
 
   const handleOnChange: ChangeEventHandler<HTMLInputElement> = (e) => {
