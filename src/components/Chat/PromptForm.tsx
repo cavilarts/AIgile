@@ -7,6 +7,7 @@ import { Button, Textarea } from "@nextui-org/react";
 import { useActions, useUIState } from "ai/rsc";
 import { ChangeEventHandler, useRef, useState } from "react";
 import UserMessage from "./UserMessage";
+import { IoSend } from "react-icons/io5";
 
 export default function PromptForm() {
   const { formRef, onKeyDown } = useEnterSubmit();
@@ -49,14 +50,16 @@ export default function PromptForm() {
   };
 
   return (
-    <form ref={formRef} onSubmit={onSubmitForm}>
+    <form ref={formRef} onSubmit={onSubmitForm} className="flex p-2">
       <Textarea
         minRows={1}
         value={input}
         onChange={handleOnChange}
         ref={inputRef}
       />
-      <Button type="submit">Send</Button>
+      <Button type="submit" isIconOnly>
+        <IoSend />
+      </Button>
     </form>
   );
 }
