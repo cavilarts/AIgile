@@ -40,7 +40,6 @@ export default function PromptForm() {
 
     try {
       const responseMessage = await submitUserMessage(message);
-      debugger;
       setMessages((prev) => {
         return prev ? [...prev, responseMessage] : [responseMessage];
       });

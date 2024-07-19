@@ -6,7 +6,6 @@ export type UserMessageProps = {
 export default function UserMessage({ children }: UserMessageProps) {
   return (
     <Card>
-      <Avatar name="User" />
       <CardBody>{children}</CardBody>
     </Card>
   );

@@ -10,10 +10,8 @@ export default function ChatPage() {
   return (
     <AI initialAIState={{ id: id, interactions: [], messages: [] }}>
       <section className="h-screen flex flex-col">
-        <div className="w-full flex-auto overflow-auto flex items-center justify-center flex-col">
-          <Messages />
-          <div className="h-px w-full" />
-        </div>
+        <Messages />
+        <div className="h-px w-full" />
         <PromptForm />
       </section>
     </AI>

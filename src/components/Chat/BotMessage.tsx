@@ -9,7 +9,7 @@ export default function BotMessage({ content }: BotMessageProps) {
   const text = useStreamableText(content);
 
   return (
-    <Card>
+    <Card className="flex">
       <Avatar name="Bot" />
       <CardBody>{content}</CardBody>
     </Card>
