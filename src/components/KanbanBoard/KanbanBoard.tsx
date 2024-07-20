@@ -1,5 +1,5 @@
 import { Column } from "./Column";
-import { AddTaskForm } from "./AddTaskForm";
+import { AddEditTaskForm } from "./AddEditTaskForm";
 
 import { ColumnStatus, Task, TaskId } from "@/types";
 import { Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
@@ -33,16 +33,14 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   return (
     <div>
       <Navbar>
-        <NavbarContent>
+        <NavbarContent justify="end">
           <NavbarItem>
-              <AddTaskForm columns={columns} onTaskCreate={onTaskCreate} />
+              <AddEditTaskForm columns={columns} onTaskCreate={onTaskCreate}  />
           </NavbarItem>
         </NavbarContent>
       </Navbar>
       <div className="h-full w-full">
         <div className="flex overflow-x-auto space-x-4 space-y-4 p-4 w-full bg-none m-auto flex-wrap">
-          
-
           {columns.map((column, index) => {
             if (!column) return null;
             const columnTasks = column.tasks.map((taskId) => tasks[taskId]);
