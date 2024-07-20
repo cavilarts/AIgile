@@ -2,7 +2,7 @@ import { getBoards } from "@/lib/db/board";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const id = req.nextUrl.searchParams.getAll("id");
+  const id = req.nextUrl.searchParams.get("id");
 
   if (!id) {
     return Response.json(
@@ -12,12 +12,19 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const boardId = parseInt(Array.isArray(id) ? id[0] : id, 10);
-    const result = await getBoards(boardId);
+    const result = await getBoards(id);
 
     return Response.json(result);
   } catch (e) {
     console.error("getBoards error", e);
     return Response.json({ error: "An error occurred" }, { status: 500 });
   }
+}
+
+export async function POST(req: NextRequest) {
+  const { name, tasks } = await req.json();
+
+  console.log(name, tasks);
+
+  return Response.json({ message: "Board created" });
 }

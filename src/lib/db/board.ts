@@ -1,4 +1,4 @@
-import { Db, Collection } from "mongodb";
+import { Db, Collection, ObjectId } from "mongodb";
 import clientPromise from "./mongoConnection";
 
 let db: Db;
@@ -10,8 +10,8 @@ async function init() {
 
   try {
     client = await clientPromise;
-    db = client.db();
-    boards = db.collection("boards");
+    db = client.db(process.env.DATABASE_NAME);
+    boards = db.collection("board");
   } catch (e) {
     console.error("MongoDB connection error", e);
   }
@@ -21,11 +21,11 @@ async function init() {
   await init();
 })();
 
-export async function getBoards(id: number) {
+export async function getBoards(id: string) {
   try {
     if (!boards) await init();
 
-    const result = await boards.find({ id }).toArray();
+    const result = await boards.findOne({ _id: new ObjectId(id) });
 
     return {
       board: result,

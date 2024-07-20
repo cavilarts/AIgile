@@ -1,8 +1,8 @@
-import { Db, Collection, CollectionInfo } from "mongodb";
+import { CollectionInfo, Db } from "mongodb";
 import clientPromise from "./mongoConnection";
 
 let db: Db;
-let collections: string[];
+let collections: (CollectionInfo | Pick<CollectionInfo, "name" | "type">)[];
 let client;
 
 async function init() {
@@ -10,8 +10,8 @@ async function init() {
 
   try {
     client = await clientPromise;
-    db = client.db();
-    collections = (await db.listCollections().toArray()).map((col) => col.name);
+    db = client.db(process.env.DATABASE_NAME);
+    collections = await db.listCollections().toArray();
   } catch (e) {
     console.error("MongoDB connection error", e);
   }
@@ -25,11 +25,12 @@ export async function getCollections() {
   try {
     if (!collections) await init();
 
-    return {
-      collections: collections,
-    };
+    return collections.map((col) => ({
+      name: col.name,
+      cols: col.type,
+    }));
   } catch (e) {
     console.error("getCollections error", e);
-    return [];
+    return null;
   }
 }
