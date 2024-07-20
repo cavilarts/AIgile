@@ -5,8 +5,10 @@ export type UserMessageProps = {
 };
 export default function UserMessage({ children }: UserMessageProps) {
   return (
-    <Card>
-      <CardBody>{children}</CardBody>
-    </Card>
+    <section className="flex justify-end">
+      <Card className="flex max-w-xs md:max-w-sm lg:max-w-lg">
+        <CardBody>{children}</CardBody>
+      </Card>
+    </section>
   );
 }

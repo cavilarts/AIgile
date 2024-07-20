@@ -2,7 +2,12 @@ import Messages from "@/components/Chat/Messages";
 import PromptForm from "@/components/Chat/PromptForm";
 import { nanoid } from "@/lib";
 import { AI } from "@/lib/chat/actions";
-import { useRef } from "react";
+
+export const metadata = {
+  title: "AI-gile",
+  description:
+    "Talk to an AI assistant to help you create your project requirements.",
+};
 
 export default function ChatPage() {
   const id = nanoid();
