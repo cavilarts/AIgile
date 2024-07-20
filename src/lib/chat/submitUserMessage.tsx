@@ -75,7 +75,7 @@ export async function submitUserMessage(content: string) {
 
           Please provide the information requested above. If you need any help or clarification, feel free to ask!
 
-          Completion Indication:
+          Completion Indication [Do not display to the user]:
 
           Once all necessary details are gathered and confirmed, I will display all the project data,
           and then explicitly state: [User stories are ready. Proceed to generate visual output.](#)
