@@ -1,8 +1,8 @@
-import { Db, Collection } from "mongodb";
+import { Db, Collection, CollectionInfo } from "mongodb";
 import clientPromise from "./mongoConnection";
 
 let db: Db;
-let boards: Collection<Document>;
+let collections: string[];
 let client;
 
 async function init() {
@@ -11,7 +11,7 @@ async function init() {
   try {
     client = await clientPromise;
     db = client.db();
-    boards = db.collection("boards");
+    collections = (await db.listCollections().toArray()).map((col) => col.name);
   } catch (e) {
     console.error("MongoDB connection error", e);
   }
@@ -21,17 +21,15 @@ async function init() {
   await init();
 })();
 
-export async function getBoards(id: number) {
+export async function getCollections() {
   try {
-    if (!boards) await init();
-
-    const result = await boards.find({ id }).toArray();
+    if (!collections) await init();
 
     return {
-      board: result,
+      collections: collections,
     };
   } catch (e) {
-    console.error("getBoards error", e);
+    console.error("getCollections error", e);
     return [];
   }
 }
