@@ -2,20 +2,17 @@
 
 import BotMessage from "@/components/Chat/BotMessage";
 import { google } from "@ai-sdk/google";
-import { Spinner } from "@nextui-org/react";
 import { streamText } from "ai";
 import {
   getMutableAIState,
   createStreamableValue,
   createStreamableUI,
 } from "ai/rsc";
-// import { isRegistered } from "./registered";
 import { nanoid } from "@/lib/utils";
 import { Loading } from "@/components/Chat/Icons";
 
 export async function submitUserMessage(content: string) {
   "use server";
-  // await isRegistered();
 
   const aiState = getMutableAIState();
 
@@ -32,7 +29,6 @@ export async function submitUserMessage(content: string) {
   });
 
   const history = aiState.get().messages;
-
   const textStream = createStreamableValue("");
   const spinnerStream = createStreamableUI(<Loading />);
   const messageStream = createStreamableUI(null);
@@ -78,11 +74,12 @@ export async function submitUserMessage(content: string) {
           Completion Indication [Do not display to the user]:
 
           Once all necessary details are gathered and confirmed, I will display all the project data,
-          and then explicitly state: [User stories are ready. Proceed to generate visual output.](#)
+          and then explicitly state: [Generate visual output](#)
           This message will indicate that the user stories are complete and you can proceed with generating the visual output.
-        `,
+      `,
         messages: [...history],
       });
+
       let textContent = "";
       spinnerStream.done(null);
 
@@ -94,6 +91,7 @@ export async function submitUserMessage(content: string) {
       }
 
       textStream.done();
+
       uiStream.done();
       messageStream.done();
       aiState.done({
