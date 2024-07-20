@@ -9,17 +9,17 @@ export default function BoardPage() {
     <KanbanBoard
       columns={[
         {
-          id: "to-do-col",
+          id: "to-do",
           title: "To Do",
           tasks: ["task-1", "task-2"],
         },
         {
-          id: "in-progress-col",
+          id: "in-progress",
           title: "In Progress",
           tasks: ["task-3", "task-4"],
         },
         {
-          id: "done-col",
+          id: "done",
           title: "Done",
           tasks: ["task-5"],
         },
@@ -30,6 +30,7 @@ export default function BoardPage() {
           title: "Implement login functionality ",
           description: "Create a secure login system with email and password",
           createdAt: new Date("2024-07-10"),
+          status: "to-do",
           assignee: "Alice",
           priority: "high",
         },
@@ -40,6 +41,7 @@ export default function BoardPage() {
             "Create a visually appealing landing page for the website",
           createdAt: new Date("2024-07-11"),
           assignee: "Bob",
+          status: "to-do",
           priority: "medium",
         },
         "task-3": {
@@ -49,6 +51,7 @@ export default function BoardPage() {
             "Improve the performance of database queries for faster load times",
           createdAt: new Date("2024-07-12"),
           assignee: "Charlie",
+          status: "in-progress",
           priority: "high",
         },
         "task-4": {
@@ -57,6 +60,7 @@ export default function BoardPage() {
           description: "Create comprehensive unit tests for the backend API",
           createdAt: new Date("2024-07-13"),
           assignee: "David",
+          status: "in-progress",
           priority: "low",
         },
         "task-5": {
@@ -65,6 +69,7 @@ export default function BoardPage() {
           description: "Add a dark mode option to improve user experience",
           createdAt: new Date("2024-07-14"),
           assignee: "Eve",
+          status: "done",
           priority: "medium",
         },
       }}
