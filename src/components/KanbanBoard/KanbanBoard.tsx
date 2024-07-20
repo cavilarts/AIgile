@@ -1,6 +1,8 @@
 import { Column } from "./Column";
+import { AddEditTaskForm } from "./AddEditTaskForm";
 
 import { ColumnStatus, Task, TaskId } from "@/types";
+import { Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
 
 export type KanbanBoardProps = {
   columns: ColumnStatus[];
@@ -29,23 +31,32 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onColumnEdit,
 }) => {
   return (
-    <div className="h-full w-full">
-      <div className="flex overflow-x-auto space-x-4 p-4 w-full bg-none m-auto">
-        {columns.map((column, index) => {
-          if (!column) return null;
-          const columnTasks = column.tasks.map((taskId) => tasks[taskId]);
+    <div>
+      <Navbar>
+        <NavbarContent justify="end">
+          <NavbarItem>
+              <AddEditTaskForm columns={columns} onTaskCreate={onTaskCreate}  />
+          </NavbarItem>
+        </NavbarContent>
+      </Navbar>
+      <div className="h-full w-full">
+        <div className="flex overflow-x-auto space-x-4 space-y-4 p-4 w-full bg-none m-auto flex-wrap">
+          {columns.map((column, index) => {
+            if (!column) return null;
+            const columnTasks = column.tasks.map((taskId) => tasks[taskId]);
 
-          return (
-            <Column
-              key={column.id}
-              column={column}
-              index={index}
-              tasks={columnTasks}
-              onTaskEdit={onTaskEdit}
-              onTaskMove={onTaskMove}
-            />
-          );
-        })}
+            return (
+              <Column
+                key={column.id}
+                column={column}
+                index={index}
+                tasks={columnTasks}
+                onTaskEdit={onTaskEdit}
+                onTaskMove={onTaskMove}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );
