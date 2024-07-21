@@ -1,5 +1,4 @@
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { Props } from "next/script";
+// import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { FC, memo } from "react";
 
 export const generateRandomString = (length: number, lowercase = false) => {
@@ -11,34 +10,37 @@ export const generateRandomString = (length: number, lowercase = false) => {
   return lowercase ? result.toLowerCase() : result;
 };
 
-const CodeBlock: FC<Props> = memo(({ language, value }) => {
-  return (
-    <div className="relative w-full font-sans codeblock bg-zinc-950">
-      <SyntaxHighlighter
-        language={language}
-        style={coldarkDark}
-        PreTag="div"
-        showLineNumbers
-        customStyle={{
-          margin: 0,
-          width: "100%",
-          background: "transparent",
-          padding: "1.5rem 1rem",
-        }}
-        lineNumberStyle={{
-          userSelect: "none",
-        }}
-        codeTagProps={{
-          style: {
-            fontSize: "0.9rem",
-            fontFamily: "var(--font-mono)",
-          },
-        }}
-      >
-        {value}
-      </SyntaxHighlighter>
-    </div>
-  );
+const CodeBlock: FC<any> = memo(({ language, value }) => {
+  // TODO - Implement a code block component
+
+  return <pre>{value}</pre>;
+  // return (
+  //   <div className="relative w-full font-sans codeblock bg-zinc-950">
+  //     <SyntaxHighlighter
+  //       language={language}
+  //       style={coldarkDark}
+  //       PreTag="div"
+  //       showLineNumbers
+  //       customStyle={{
+  //         margin: 0,
+  //         width: "100%",
+  //         background: "transparent",
+  //         padding: "1.5rem 1rem",
+  //       }}
+  //       lineNumberStyle={{
+  //         userSelect: "none",
+  //       }}
+  //       codeTagProps={{
+  //         style: {
+  //           fontSize: "0.9rem",
+  //           fontFamily: "var(--font-mono)",
+  //         },
+  //       }}
+  //     >
+  //       {value}
+  //     </SyntaxHighlighter>
+  //   </div>
+  // );
 });
 
 CodeBlock.displayName = "CodeBlock";
