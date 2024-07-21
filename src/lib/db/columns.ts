@@ -22,13 +22,32 @@ async function init() {
   await init();
 })();
 
-export async function setColumns(columns: OptionalId<Document>[]) {
+export async function createColumn(data: OptionalId<Column>) {
   try {
     if (!boards) await init();
 
-    return await boards.insertMany(columns);
+    const result = await boards.insertOne({
+      ...data,
+    });
+
+    return {
+      data: result,
+    };
   } catch (e) {
-    console.error("setColumns error", e);
-    return null;
+    console.error("createColumn error", e);
+    return [];
+  }
+}
+
+export async function createColumns(data: OptionalId<Column>[]) {
+  try {
+    if (!boards) await init();
+
+    const result = await boards.insertMany(data);
+
+    return result;
+  } catch (e) {
+    console.error("createColumns error", e);
+    return [];
   }
 }

@@ -1,4 +1,4 @@
-import { getBoards } from "@/lib/db/board";
+import { createBoard, getBoards } from "@/lib/db/board";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -22,9 +22,38 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { name, tasks } = await req.json();
+  const { name, description, companyId, projectId, createdBy, columns, tasks } =
+    await req.json();
+  const tempCreatedBy = {
+    username: "John Doe",
+    userId: "123456",
+  };
 
-  console.log(name, tasks);
+  if (!name || !description || !companyId || !projectId) {
+    return Response.json(
+      { error: "Please provide all required fields" },
+      { status: 400 }
+    );
+  }
+
+  const data = {
+    name,
+    description,
+    companyId,
+    projectId,
+    createdBy,
+    columns: [],
+    tasks: [],
+  };
+
+  try {
+    const result = await createBoard(data);
+
+    return Response.json(result);
+  } catch (e) {
+    console.error("createBoard error", e);
+    return Response.json({ error: "An error occurred" }, { status: 500 });
+  }
 
   return Response.json({ message: "Board created" });
 }

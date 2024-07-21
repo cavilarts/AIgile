@@ -1,4 +1,4 @@
-import { Task } from "./task.types";
+import { Task, TaskId } from "./task.types";
 
 export type Column = {
   name: string;
@@ -7,4 +7,10 @@ export type Column = {
   projectId: string;
   boardId: string;
   tasks: Task[];
+};
+
+export type ColumnStatus = {
+  id: string;
+  title: string;
+  tasks: TaskId[];
 };
