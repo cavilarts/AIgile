@@ -21,6 +21,7 @@ export async function generateJSON(messages: CoreMessage[]) {
       {
         "projectName": string,
         "boardName" string,
+        "projectDescription": string,
         "tasks": {
           title: string
           description: string // gherkin format and using markdown in one single line
