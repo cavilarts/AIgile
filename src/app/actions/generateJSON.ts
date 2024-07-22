@@ -25,7 +25,7 @@ export async function generateJSON(messages: CoreMessage[]) {
         "tasks": {
           title: string
           description: string // gherkin format and using markdown in one single line
-          priority: string
+          priority: 'low' | 'medium' | 'high'
           tags: tags
         } []
       }

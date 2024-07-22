@@ -1,12 +1,13 @@
 import { Column } from "./Column";
 import { AddEditTaskForm } from "./AddEditTaskForm";
 
-import { ColumnStatus, Task, TaskId } from "@/types";
+import { ColumnStatus, Task, TaskId  } from "@/types";
 import { Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
+import { ObjectId } from "mongodb";
 
 export type KanbanBoardProps = {
   columns: ColumnStatus[];
-  tasks: Record<TaskId, Task>;
+  tasks: Record<string, Task>;
   onTaskMove: (
     taskId: TaskId,
     sourceColumn: string,
@@ -14,7 +15,7 @@ export type KanbanBoardProps = {
   ) => void;
   onTaskEdit: (taskId: TaskId, updatedTask: Partial<Task>) => void;
   // TODO: Implement the onTaskCreate function and the create modal
-  onTaskCreate: (task: Omit<Task, "id" | "createdAt">) => void;
+  onTaskCreate: (task: Omit<Task, "id" | "createdAt" | "projectId">) => void;
   // TODO: Implement the onColumnCreate function and the create modal
   onColumnCreate: (column: Omit<ColumnStatus, "id" | "tasks">) => void;
   // TODO: Implement the onColumnEdit function and the edit modal

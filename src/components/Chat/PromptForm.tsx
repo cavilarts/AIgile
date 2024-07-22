@@ -8,12 +8,14 @@ import { useActions, useUIState } from "ai/rsc";
 import { ChangeEventHandler, useRef, useState } from "react";
 import UserMessage from "./UserMessage";
 import { IoSend } from "react-icons/io5";
+import { Message } from "ai";
+import { ClientMessage } from "@/types/ai.types";
 
 export default function PromptForm() {
   const { formRef, onKeyDown } = useEnterSubmit();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { submitUserMessage } = useActions();
-  const [messages, setMessages] = useUIState<typeof AI>();
+  const [messages, setMessages] = useUIState();
   const [input, setInput] = useState("");
 
   const handleOnChange: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -30,7 +32,7 @@ export default function PromptForm() {
       return;
     }
 
-    setMessages((currentMessages) => [
+    setMessages((currentMessages: Array<Message>) => [
       ...currentMessages,
       {
         id: nanoid(),
@@ -40,7 +42,7 @@ export default function PromptForm() {
 
     try {
       const responseMessage = await submitUserMessage(message);
-      setMessages((prev) => {
+      setMessages((prev: Array<Message>) => {
         return prev ? [...prev, responseMessage] : [responseMessage];
       });
     } catch (error) {

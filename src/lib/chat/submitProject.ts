@@ -1,86 +1,102 @@
-import { Project } from "@/types/project.types";
-import { createProject, getProject, updateProject } from "../db/project";
+import { ProjectGenerated } from "@/types/project.types";
 import { createBoard, updateBoard } from "../db/board";
-import { createColumns } from "../db/columns";
-import { createTasks } from "../db/taks";
+import { createProject, getProject, updateProject } from "../db/project";
+import { createTasks, createColumns } from "../db";
+import { ObjectId } from "mongodb";
 
-export const submitProject = async (project: Project) => {
-  const { name, description, boardName, tasks } = project;
+export const submitProject = async (project: ProjectGenerated) => {
+  const { boardName, projectDescription,  tasks } = project;
 
   try {
-    const slug = name.toLowerCase().replace(/ /g, "-");
+    const slug = boardName.toLowerCase().replace(/ /g, "-");
 
     const project = await createProject({
-      name,
-      description,
+      name: boardName,
+      description: projectDescription,
       slug,
     });
-
-    console.log("savedBoard", project.insertedId);
+    const projectId = "insertedId" in project ? project.insertedId : undefined;
+    if(projectId === undefined) throw new Error("Project ID is undefined");
 
     const savedBoard = await createBoard({
       name: boardName,
-      projectId: project.insertedId,
+      projectId,
+      // TODO: Update companyId and createdBy with actual values when authentication is implemented
+      description: "",
+      companyId: "",
+      createdBy: "",
     });
-
-    console.log("savedBoard", savedBoard.insertedId);
+    const boardId = "insertedId" in savedBoard ? String(savedBoard.insertedId) : undefined;
+    if(boardId === undefined) throw new Error("Board ID is undefined");
 
     const savedColumns = await createColumns([
       {
         name: "To Do",
-        boardId: savedBoard.insertedId,
-        projectId: project.insertedId,
+        boardId,
+        projectId,
       },
       {
         name: "In Progress",
-        boardId: savedBoard.insertedId,
-        projectId: project.insertedId,
+        boardId,
+        projectId,
       },
       {
         name: "Done",
-        boardId: savedBoard.insertedId,
-        projectId: project.insertedId,
+        boardId,
+        projectId
       },
     ]);
+    const columnIds = "insertedIds" in savedColumns ? savedColumns.insertedIds : undefined;
+    if(columnIds === undefined) throw new Error("Column IDs are undefined");
+    const columnId = "insertedIds" in savedColumns ? columnIds[0] : undefined;
+    if(columnId === undefined) throw new Error("Column ID is undefined");
 
     console.log("savedColumns", savedColumns);
 
     const savedTasks = await createTasks([
       ...tasks.map((taskToSave) => ({
         ...taskToSave,
-        projectId: project.insertedId,
-        boardId: savedBoard.insertedId,
-        columnId: savedColumns.insertedIds[0],
+        projectId,
+        boardId,
+        columnId,
+        createdAt: new Date(),
       })),
     ]);
+    const taskIds = "insertedIds" in savedTasks ? savedTasks.insertedIds : undefined;
+    if(taskIds === undefined) throw new Error("Task IDs are undefined");
 
-    const listOfTasks = [];
+    const listOfTasks = [] as ObjectId[];
     const listOfColumns = [];
 
-    for (const a in savedTasks.insertedIds) {
-      console.log("task", a);
-      listOfTasks.push(savedTasks.insertedIds[a]);
+    for (const a in taskIds) {
+      listOfTasks.push(taskIds[a] as ObjectId);
     }
 
-    for (const b in savedColumns.insertedIds) {
-      listOfColumns.push(savedColumns.insertedIds[b]);
+    for (const b in columnIds) {
+      listOfColumns.push(columnIds[b]);
     }
 
-    await updateBoard(savedBoard.insertedId, {
-      boardId: savedBoard.insertedId,
-      projectId: project.insertedId,
+    await updateBoard(boardId, {
+      projectId,
       columns: listOfColumns,
       tasks: listOfTasks,
+      name: boardName,
+      // TODO: Update companyId and createdBy with actual values when authentication is implemented
+      description: "",
+      companyId: "",
+      createdBy: "",
     });
 
-    await updateProject(project.insertedId, {
-      boardId: savedBoard.insertedId,
-      projectId: project.insertedId,
-      columns: listOfColumns,
+    await updateProject(projectId, {
+      boardName: boardId,
       tasks: listOfTasks,
+      // TODO: Update these properties with actual values when authentication is implemented
+      name: "",
+      description: "",
+      slug: ""
     });
 
-    const savedProject = await getProject(project.insertedId);
+    const savedProject = await getProject(projectId);
 
     return Response.json(savedProject);
   } catch (e) {

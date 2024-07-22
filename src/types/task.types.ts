@@ -1,12 +1,16 @@
-export type TaskId = string;
+import { ObjectId  } from "mongodb";
 
-export type Task = {
-  id: TaskId;
+export type TaskId = ObjectId | string;
+
+export type Task<T = ObjectId | string> = {
+  _id?: T;
   title: string;
   description?: string;
+  priority: "low" | "medium" | "high";
+  // tags: string[];
+  projectId: T;
   createdAt: Date;
   assignee?: string;
-  priority: "low" | "medium" | "high";
-  subtasks?: TaskId[];
-  status: string;
+  subtasks?: T[];
+  columnId: T;
 };

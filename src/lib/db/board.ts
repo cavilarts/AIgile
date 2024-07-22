@@ -1,9 +1,9 @@
 import { Db, Collection, ObjectId } from "mongodb";
 import clientPromise from "./mongoConnection";
-import { Board } from "@/types";
+import { Board, Optional } from "@/types";
 
 let db: Db;
-let boards: Collection<Document>;
+let boards: Collection<Board>;
 let client;
 
 async function init() {
@@ -37,13 +37,13 @@ export async function getBoard(id: string) {
   }
 }
 
-export async function createBoard(data: Board) {
+export async function createBoard(data: Optional<Board, 'columns' | 'tasks'>) {
   try {
     if (!boards) await init();
 
     const result = await boards.insertOne({
       ...data,
-      column: [],
+      columns: [],
       tasks: [],
     });
 

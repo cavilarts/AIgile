@@ -1,16 +1,18 @@
-import { Task, TaskId } from "./task.types";
+import { ObjectId, OptionalId } from "mongodb";
+
+export type ColumnId = string;
 
 export type Column = {
   name: string;
   description: string;
   companyId: string;
-  projectId: string;
+  projectId: ObjectId;
   boardId: string;
-  tasks: Task[];
+  tasks: ObjectId[];
 };
 
 export type ColumnStatus = {
   id: string;
   title: string;
-  tasks: TaskId[];
+  tasks: string[];
 };

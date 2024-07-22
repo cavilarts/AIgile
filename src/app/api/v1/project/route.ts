@@ -1,7 +1,8 @@
+// @ts-nocheck
 import { createBoard, updateBoard } from "@/lib/db/board";
 import { createColumns } from "@/lib/db/columns";
 import { createProject, getProject, updateProject } from "@/lib/db/project";
-import { createTasks } from "@/lib/db/taks";
+import { createTasks } from "@/lib/db";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -23,12 +24,15 @@ export async function POST(req: NextRequest) {
       description,
       slug,
     });
+    const projectId = 'insertedId' in project ? project.insertedId : undefined;
 
-    console.log("savedBoard", project.insertedId);
+    if(projectId === undefined) throw new Error("Project ID is undefined");
+
+    console.log("savedBoard", projectId);
 
     const savedBoard = await createBoard({
       name: boardName,
-      projectId: project.insertedId,
+      projectId,
     });
 
     console.log("savedBoard", savedBoard.insertedId);

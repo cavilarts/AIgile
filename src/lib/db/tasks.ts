@@ -1,9 +1,9 @@
 import { Db, Collection, OptionalId } from "mongodb";
 import clientPromise from "./mongoConnection";
-import { Task } from "@/types/task.types";
+import { Task } from "@/types";
 
 let db: Db;
-let task: Collection<Document>;
+let task: Collection<Task>;
 let client;
 
 async function init() {
