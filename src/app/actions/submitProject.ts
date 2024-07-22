@@ -1,7 +1,7 @@
 import { ProjectGenerated } from "@/types/project.types";
-import { createBoard, updateBoard } from "../db/board";
-import { createProject, getProject, updateProject } from "../db/project";
-import { createTasks, createColumns } from "../db";
+import { createBoard, updateBoard } from "../../lib/db/board";
+import { createProject, getProject, updateProject } from "../../lib/db/project";
+import { createTasks, createColumns } from "../../lib/db";
 import { ObjectId } from "mongodb";
 
 export const submitProject = async (project: ProjectGenerated) => {

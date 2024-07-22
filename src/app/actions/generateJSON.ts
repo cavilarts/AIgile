@@ -3,6 +3,8 @@
 import { extractJSONfromString } from "@/lib";
 import { google } from "@ai-sdk/google";
 import { CoreMessage, generateText  } from "ai";
+import { submitProject } from "./submitProject";
+import { ProjectGenerated } from "@/types";
 
 const DEFAULT_ERROR_MESSAGE = "An error occurred while generating the visual output data.";
 
@@ -36,12 +38,13 @@ export async function generateJSON(messages: CoreMessage[]) {
     const extractedJSON = extractJSONfromString(text);
     if(!extractedJSON) throw new Error("No JSON found in the generated text");
     // Parse the JSON to ensure it's valid
-    const parsedJSON = JSON.parse(extractedJSON);
-
-    // TODO: store in the database
+    const parsedJSON = JSON.parse(extractedJSON) as ProjectGenerated;
     console.log("JSON to be stored:", parsedJSON);
 
-    return { success: true, message: "Visual output data generated and ready for use!", json: parsedJSON };
+    const response = submitProject(parsedJSON);
+    console.log("Response from submitProject:", response);
+
+    return { success: true, message: "Visual output data generated and ready for use!" };
 
   } catch (error) {
     console.error("Error generating JSON:", error);
