@@ -1,9 +1,9 @@
 import { Db, Collection, ObjectId, OptionalId } from "mongodb";
 import clientPromise from "./mongoConnection";
-import { Project } from "@/types/project.types";
+import { Optional, Project } from "@/types";
 
 let db: Db;
-let project: Collection<Document>;
+let project: Collection<Optional<Project, 'tasks' | 'boardName'>>;
 let client;
 
 async function init() {
@@ -22,7 +22,7 @@ async function init() {
   await init();
 })();
 
-export async function getProject(id: string) {
+export async function getProject(id: ObjectId) {
   try {
     if (!project) await init();
 
@@ -37,13 +37,11 @@ export async function getProject(id: string) {
   }
 }
 
-export async function createProject(data: OptionalId<Project>) {
+export async function createProject(data: Optional<Project, 'tasks' | 'boardName'>) {
   try {
     if (!project) await init();
 
-    const result = await project.insertOne({
-      ...data,
-    });
+    const result = await project.insertOne(data);
 
     return result;
   } catch (e) {
@@ -52,7 +50,7 @@ export async function createProject(data: OptionalId<Project>) {
   }
 }
 
-export async function updateProject(id: string, data: Project) {
+export async function updateProject(id: ObjectId, data: Project) {
   try {
     if (!project) await init();
 

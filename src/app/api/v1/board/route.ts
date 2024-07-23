@@ -1,4 +1,4 @@
-import { createBoard, getBoards } from "@/lib/db/board";
+import { createBoard, getBoard } from "@/lib/db";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const result = await getBoards(id);
+    const result = await getBoard(id);
 
     return Response.json(result);
   } catch (e) {

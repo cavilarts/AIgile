@@ -20,9 +20,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 }) => {
   const dragRef = useRef<HTMLDivElement>(null);
 
-  useDrag({ data: task.id }, dragRef, {
+  useDrag({ data: task._id }, dragRef, {
     onDragStart: (e) => {
-      e.dataTransfer.setData("taskId", task.id);
+      e.dataTransfer.setData("taskId", String(task._id));
       e.dataTransfer.setData("sourceColumnId", columnId);
     },
   });

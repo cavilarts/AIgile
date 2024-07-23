@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Modal,
   Button,
@@ -24,7 +23,7 @@ const ReactQuill = dynamic(() => import("react-quill"), {
 
 import "react-quill/dist/quill.snow.css";
 
-type onTaskCreateParams = Omit<Task, "id" | "createdAt">;
+type onTaskCreateParams = Omit<Task, "id" | "createdAt" | "projectId">;
 
 type AddTaskFormProps = {
   onTaskCreate: (task: onTaskCreateParams) => void;
@@ -67,7 +66,7 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
   const onSubmit = (data: FormData) => {
     const mappedData: onTaskCreateParams = {
       ...data,
-      status: mode === 'edit' && data.status ? data.status : columns[0].id,
+      columnId: mode === 'edit' && data.status ? data.status : columns[0].id,
     };
     onTaskCreate(mappedData);
     onOpenChange();

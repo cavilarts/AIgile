@@ -60,7 +60,7 @@ export const Column: React.FC<ColumnProps> = ({
       <CardBody className="min-height-500 space-y-4">
         {tasks.map((task) => (
           <TaskCard
-            key={task.id}
+            key={String(task._id)}
             columnId={column.id}
             task={task}
             onEdit={onTaskEdit}

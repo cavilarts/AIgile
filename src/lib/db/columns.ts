@@ -1,9 +1,10 @@
 import { Db, Collection, OptionalId } from "mongodb";
 import clientPromise from "./mongoConnection";
 import { Column } from "@/types/column.types";
+import { Board, Optional } from "@/types";
 
 let db: Db;
-let boards: Collection<Document>;
+let column: Collection<Optional<Column, 'description' | 'companyId' | 'tasks'>>;
 let client;
 
 async function init() {
@@ -12,7 +13,7 @@ async function init() {
   try {
     client = await clientPromise;
     db = client.db(process.env.DATABASE_NAME);
-    boards = db.collection("column");
+    column = db.collection("column");
   } catch (e) {
     console.error("MongoDB connection error", e);
   }
@@ -24,11 +25,9 @@ async function init() {
 
 export async function createColumn(data: OptionalId<Column>) {
   try {
-    if (!boards) await init();
+    if (!column) await init();
 
-    const result = await boards.insertOne({
-      ...data,
-    });
+    const result = await column.insertOne(data);
 
     return {
       data: result,
@@ -39,11 +38,11 @@ export async function createColumn(data: OptionalId<Column>) {
   }
 }
 
-export async function createColumns(data: OptionalId<Column>[]) {
+export async function createColumns(data: OptionalId<Optional<Column, 'description' | 'companyId' | 'tasks'>>[]) {
   try {
-    if (!boards) await init();
+    if (!column) await init();
 
-    const result = await boards.insertMany(data);
+    const result = await column.insertMany(data);
 
     return result;
   } catch (e) {
