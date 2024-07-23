@@ -1,5 +1,4 @@
-import Messages from "@/components/Chat/Messages";
-import PromptForm from "@/components/Chat/PromptForm";
+import ChatPageWrapper from "@/components/Chat/ChatPageWrapper";
 import { nanoid } from "@/lib";
 import { AI } from "@/lib/chat/actions";
 
@@ -14,11 +13,7 @@ export default function ChatPage() {
 
   return (
     <AI initialAIState={{ id: id, interactions: [], messages: [] }}>
-      <section className="h-screen flex flex-col">
-        <Messages />
-        <div className="h-px w-full" />
-        <PromptForm />
-      </section>
+      <ChatPageWrapper />
     </AI>
   );
 }

@@ -5,15 +5,17 @@ import { EmptyMessages } from "./Emptymessages";
 import { useScrollAnchor } from "@/lib/hooks/useScrollAnchor";
 import { Button } from "@nextui-org/react";
 import { FaChevronDown } from "react-icons/fa";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export type MessagesProps = {};
 
 export default function Messages({}: MessagesProps) {
   const [messages] = useUIState();
+
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } =
     useScrollAnchor();
-
-  console.log(isAtBottom);
 
   if (!messages.length) {
     return (
