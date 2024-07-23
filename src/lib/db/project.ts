@@ -37,11 +37,15 @@ export async function getProject(id: ObjectId) {
   }
 }
 
-export async function createProject(data: Optional<Project, 'tasks' | 'boardName'>) {
+export async function createProject(data: Optional<Project, 'tasks' | 'boardName' | 'createdAt' | 'lastModifiedAt'>) {
   try {
     if (!project) await init();
 
-    const result = await project.insertOne(data);
+    const result = await project.insertOne({
+      ...data,
+      createdAt: new Date(),
+      lastModifiedAt: new Date(),
+    });
 
     return result;
   } catch (e) {
@@ -50,13 +54,13 @@ export async function createProject(data: Optional<Project, 'tasks' | 'boardName
   }
 }
 
-export async function updateProject(id: ObjectId, data: Project) {
+export async function patchProject(id: ObjectId, data: Partial<Omit<Project, 'createdAt' | 'lastModifiedAt'>>) {
   try {
     if (!project) await init();
 
     const result = await project.updateOne(
       { _id: new ObjectId(id) },
-      { $set: { ...data } }
+      { $set: { ...data, lastModifiedAt: new Date() } }
     );
 
     return result;

@@ -37,7 +37,7 @@ export async function getBoard(id: string) {
   }
 }
 
-export async function createBoard(data: Optional<Board, 'columns' | 'tasks'>) {
+export async function createBoard(data: Optional<Board, 'columns' | 'tasks' >) {
   try {
     if (!boards) await init();
 
@@ -54,13 +54,16 @@ export async function createBoard(data: Optional<Board, 'columns' | 'tasks'>) {
   }
 }
 
-export async function updateBoard(id: string, data: Board) {
+export async function patchBoard(id: string, data: Partial<Board>) {
   try {
     if (!boards) await init();
 
     const result = await boards.updateOne(
       { _id: new ObjectId(id) },
-      { $set: data }
+      { $set: {
+        ...data,
+        lastModifiedAt: new Date(),
+      } }
     );
 
     return result;
