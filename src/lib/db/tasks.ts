@@ -1,4 +1,4 @@
-import { Db, Collection, OptionalId } from "mongodb";
+import { Db, Collection, OptionalId, ObjectId } from "mongodb";
 import clientPromise from "./mongoConnection";
 import { Task } from "@/types";
 
@@ -31,6 +31,19 @@ export async function createTasks(data: OptionalId<Task>[]) {
     return result;
   } catch (e) {
     console.error("createTasks error", e);
+    return [];
+  }
+}
+
+export async function getTask(id: string) {
+  try {
+    if (!task) await init();
+
+    const result = await task.findOne({ _id: new ObjectId(id) });
+
+    return result;
+  } catch (e) {
+    console.error("getTasks error", e);
     return [];
   }
 }

@@ -28,9 +28,7 @@ export async function getProject(id: ObjectId) {
 
     const result = await project.findOne({ _id: new ObjectId(id) });
 
-    return {
-      data: result,
-    };
+    return result;
   } catch (e) {
     console.error("getProjects error", e);
     return [];
