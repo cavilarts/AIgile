@@ -9,7 +9,6 @@ import { ProjectGenerated } from "@/types";
 const DEFAULT_ERROR_MESSAGE = "An error occurred while generating the visual output data.";
 
 export async function generateJSON(messages: CoreMessage[]) {
-
   try {
     console.log("Generating JSON from messages:", messages);
     if (messages[messages.length - 1].role === "assistant") {

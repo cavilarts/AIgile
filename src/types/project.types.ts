@@ -20,6 +20,7 @@ export type Project = OptionalId<{
   slug: string;
   boardName: string; // Board name or boardId?
   createdAt: Date;
+  createdBy: ObjectId;
   lastModifiedAt: Date;
   tasks: ObjectId[];
 }>
