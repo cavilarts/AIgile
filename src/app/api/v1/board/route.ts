@@ -54,6 +54,4 @@ export async function POST(req: NextRequest) {
     console.error("createBoard error", e);
     return Response.json({ error: "An error occurred" }, { status: 500 });
   }
-
-  return Response.json({ message: "Board created" });
 }

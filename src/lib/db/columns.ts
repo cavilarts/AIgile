@@ -4,7 +4,7 @@ import { Column } from "@/types/column.types";
 import { Board, Optional } from "@/types";
 
 let db: Db;
-let column: Collection<Optional<Column, 'description' | 'companyId' | 'tasks'>>;
+let column: Collection<Optional<Column, "description" | "companyId" | "tasks">>;
 let client;
 
 async function init() {
@@ -23,6 +23,21 @@ async function init() {
   await init();
 })();
 
+export async function getColumnsByProjectId(projectId: string) {
+  if (!column) await init();
+
+  try {
+    if (!column) await init();
+
+    const result = await column.find({ projectId }).toArray();
+
+    return result;
+  } catch (e) {
+    console.error("getColumnsByProjectId error", e);
+    return [];
+  }
+}
+
 export async function createColumn(data: OptionalId<Column>) {
   try {
     if (!column) await init();
@@ -38,7 +53,9 @@ export async function createColumn(data: OptionalId<Column>) {
   }
 }
 
-export async function createColumns(data: OptionalId<Optional<Column, 'description' | 'companyId' | 'tasks'>>[]) {
+export async function createColumns(
+  data: OptionalId<Optional<Column, "description" | "companyId" | "tasks">>[]
+) {
   try {
     if (!column) await init();
 

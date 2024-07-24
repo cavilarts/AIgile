@@ -24,9 +24,9 @@ export async function POST(req: NextRequest) {
       description,
       slug,
     });
-    const projectId = 'insertedId' in project ? project.insertedId : undefined;
+    const projectId = "insertedId" in project ? project.insertedId : undefined;
 
-    if(projectId === undefined) throw new Error("Project ID is undefined");
+    if (projectId === undefined) throw new Error("Project ID is undefined");
 
     console.log("savedBoard", projectId);
 
@@ -115,7 +115,13 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    console.log("getProject", id);
+
     const project = await getProject(id);
+
+    if (!project) {
+      return Response.json({ error: "Project not found" }, { status: 404 });
+    }
 
     return Response.json(project);
   } catch (e) {

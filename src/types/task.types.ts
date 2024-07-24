@@ -12,5 +12,6 @@ export type Task<T = ObjectId | string> = {
   createdAt: Date;
   assignee?: string;
   subtasks?: T[];
+  status?: T;
   columnId: T;
 };

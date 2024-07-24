@@ -3,7 +3,7 @@ import clientPromise from "./mongoConnection";
 import { Optional, Project } from "@/types";
 
 let db: Db;
-let project: Collection<Optional<Project, 'tasks' | 'boardName'>>;
+let project: Collection<Optional<Project, "tasks" | "boardName">>;
 let client;
 
 async function init() {
@@ -35,7 +35,22 @@ export async function getProject(id: ObjectId) {
   }
 }
 
-export async function createProject(data: Optional<Project, 'tasks' | 'boardName'>) {
+export async function getProjectBySlug(slug: string) {
+  try {
+    if (!project) await init();
+
+    const result = await project.findOne({ slug });
+
+    return result;
+  } catch (e) {
+    console.error("getProjects error", e);
+    return [];
+  }
+}
+
+export async function createProject(
+  data: Optional<Project, "tasks" | "boardName">
+) {
   try {
     if (!project) await init();
 
