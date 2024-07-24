@@ -103,3 +103,26 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function GET(req: NextRequest) {
+  const id = req.nextUrl.searchParams.get("id");
+
+  if (!id) {
+    return Response.json(
+      { error: "Please provide a project id" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const project = await getProject(id);
+
+    return Response.json(project);
+  } catch (e) {
+    console.error("getProject error", e);
+    return Response.json(
+      { error: "An error occurred", state: e },
+      { status: 500 }
+    );
+  }
+}
