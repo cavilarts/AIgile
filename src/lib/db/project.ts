@@ -1,6 +1,7 @@
 import { Db, Collection, ObjectId, OptionalId } from "mongodb";
 import clientPromise from "./mongoConnection";
 import { Optional, Project } from "@/types";
+import { getSessionUser } from "./saveUser";
 
 let db: Db;
 let project: Collection<Optional<Project, "tasks" | "boardName">>;
@@ -37,9 +38,10 @@ export async function getProject(id: ObjectId) {
 
 export async function getProjectBySlug(slug: string) {
   try {
+    const user = await getSessionUser();
     if (!project) await init();
 
-    const result = await project.findOne({ slug });
+    const result = await project.findOne({ slug, createdBy: user.data._id });
 
     return result;
   } catch (e) {
