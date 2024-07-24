@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useAIState } from 'ai/rsc';
 import { generateJSON } from "@/app/actions/generateJSON";
 
-
 export default function GenerateJSONButton() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [ {messages} ] = useAIState();
@@ -18,7 +17,7 @@ export default function GenerateJSONButton() {
     }
 
     try {
-      const result = await generateJSON(messages);
+      const result = await generateJSON(messages );
       
       if (result.success) {
         alert(result.message);

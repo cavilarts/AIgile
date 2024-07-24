@@ -7,7 +7,7 @@ import PromptForm from "./PromptForm";
 import { useEffect } from "react";
 
 export default function ChatPageWrapper() {
-  const { status } = useSession();
+  const { status, data } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -15,6 +15,9 @@ export default function ChatPageWrapper() {
       router.push("/login");
     }
   }, [router, status]);
+
+  console.log("status", status);
+  console.log("data", data);
 
   return (
     <>

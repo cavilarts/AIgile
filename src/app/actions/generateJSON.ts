@@ -9,7 +9,6 @@ import { ProjectGenerated } from "@/types";
 const DEFAULT_ERROR_MESSAGE = "An error occurred while generating the visual output data.";
 
 export async function generateJSON(messages: CoreMessage[]) {
-
   try {
     console.log("Generating JSON from messages:", messages);
     if (messages[messages.length - 1].role === "assistant") {
@@ -22,8 +21,9 @@ export async function generateJSON(messages: CoreMessage[]) {
       Generate a JSON with the following structure as defined in the conversation. Do not include any explanatory text, only output valid JSON
       {
         "projectName": string,
-        "boardName" string,
         "projectDescription": string,
+        "boardName" string,
+        "boardDescription": string,
         "tasks": {
           title: string
           description: string // gherkin format and using markdown in one single line

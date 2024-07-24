@@ -1,11 +1,29 @@
 import { ProjectGenerated } from "@/types/project.types";
-import { createBoard, updateBoard } from "../../lib/db/board";
-import { createProject, getProject, updateProject } from "../../lib/db/project";
-import { createTasks, createColumns } from "../../lib/db";
+import { createBoard, patchBoard } from "../../lib/db/board";
+import { createProject, getProject, patchProject } from "../../lib/db/project";
+import { createTasks, createColumns, getUserByEmail } from "../../lib/db";
 import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth/auth";
 
 export const submitProject = async (project: ProjectGenerated) => {
-  const { boardName, projectDescription,  tasks } = project;
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session?.user?.email) {
+    return Response.json(
+      { error: "You must be signed in to submit a project" },
+      { status: 401 }
+    );
+  }
+  const user = await getUserByEmail(session?.user?.email);
+  if(!user || !user.data) {
+    return Response.json(
+      { error: "You must be registered to submit a project" },
+      { status: 401 }
+    );
+  }
+  
+  const { boardName, projectDescription, boardDescription,  tasks } = project;
 
   try {
     const slug = boardName.toLowerCase().replace(/ /g, "-");
@@ -13,6 +31,7 @@ export const submitProject = async (project: ProjectGenerated) => {
     const project = await createProject({
       name: boardName,
       description: projectDescription,
+      createdBy: user.data._id,
       slug,
     });
     const projectId = "insertedId" in project ? project.insertedId : undefined;
@@ -22,9 +41,9 @@ export const submitProject = async (project: ProjectGenerated) => {
       name: boardName,
       projectId,
       // TODO: Update companyId and createdBy with actual values when authentication is implemented
-      description: "",
+      description: boardDescription,
       companyId: "",
-      createdBy: "",
+      createdBy: user.data._id,
     });
     const boardId = "insertedId" in savedBoard ? String(savedBoard.insertedId) : undefined;
     if(boardId === undefined) throw new Error("Board ID is undefined");
@@ -60,6 +79,7 @@ export const submitProject = async (project: ProjectGenerated) => {
         boardId,
         columnId,
         createdAt: new Date(),
+        createdBy: user.data._id,
       })),
     ]);
     const taskIds = "insertedIds" in savedTasks ? savedTasks.insertedIds : undefined;
@@ -76,24 +96,18 @@ export const submitProject = async (project: ProjectGenerated) => {
       listOfColumns.push(columnIds[b]);
     }
 
-    await updateBoard(boardId, {
+    await patchBoard(boardId, {
       projectId,
       columns: listOfColumns,
       tasks: listOfTasks,
       name: boardName,
       // TODO: Update companyId and createdBy with actual values when authentication is implemented
-      description: "",
-      companyId: "",
-      createdBy: "",
     });
 
-    await updateProject(projectId, {
+    await patchProject(projectId, {
       boardName: boardId,
       tasks: listOfTasks,
       // TODO: Update these properties with actual values when authentication is implemented
-      name: "",
-      description: "",
-      slug: ""
     });
 
     const savedProject = await getProject(projectId);
