@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function PATCH(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   const requestBody = !!req.body && req.json();
 
   if (requestBody === null) {
