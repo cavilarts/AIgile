@@ -21,3 +21,4 @@ export * from "./column.types";
 export * from "./project.types";
 export * from "./task.types";
 export * from "./util.types"
+export * from "./user.types";

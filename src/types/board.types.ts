@@ -7,7 +7,7 @@ export type Board = {
   description: string;
   companyId: string;
   projectId: ObjectId;
-  createdBy: string;
+  createdBy: ObjectId;
   columns: ObjectId[];
   tasks: ObjectId[];
 };

@@ -61,6 +61,19 @@ export async function getTask(id: string) {
   }
 }
 
+export async function getTasks(boardId: string) {
+  try {
+    if (!task) await init();
+
+    const result = await task.find({ boardId }).toArray();
+
+    return result;
+  } catch (e) {
+    console.error("getTasks error", e);
+    return [];
+  }
+}
+
 export async function updateTask(id: string, data: Task) {
   try {
     if (!task) await init();

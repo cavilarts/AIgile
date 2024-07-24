@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { createBoard, updateBoard } from "@/lib/db/board";
+import { createBoard, patchBoard } from "@/lib/db/board";
 import { createColumns } from "@/lib/db/columns";
-import { createProject, getProject, updateProject } from "@/lib/db/project";
+import { createProject, getProject, patchProject } from "@/lib/db/project";
 import { createTasks } from "@/lib/db";
 import { NextRequest } from "next/server";
 
@@ -78,14 +78,14 @@ export async function POST(req: NextRequest) {
       listOfColumns.push(savedColumns.insertedIds[b]);
     }
 
-    await updateBoard(savedBoard.insertedId, {
+    await patchBoard(savedBoard.insertedId, {
       boardId: savedBoard.insertedId,
       projectId: project.insertedId,
       columns: listOfColumns,
       tasks: listOfTasks,
     });
 
-    await updateProject(project.insertedId, {
+    await patchProject(project.insertedId, {
       boardId: savedBoard.insertedId,
       projectId: project.insertedId,
       columns: listOfColumns,

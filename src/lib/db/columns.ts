@@ -1,4 +1,4 @@
-import { Db, Collection, OptionalId } from "mongodb";
+import { Db, Collection, OptionalId, ObjectId } from "mongodb";
 import clientPromise from "./mongoConnection";
 import { Column } from "@/types/column.types";
 import { Board, Optional } from "@/types";
@@ -64,6 +64,32 @@ export async function createColumns(
     return result;
   } catch (e) {
     console.error("createColumns error", e);
+    return [];
+  }
+}
+
+export async function getColumn(id: string) {
+  try {
+    if (!column) await init();
+
+    const result = await column.findOne({ _id: new ObjectId(id) });
+
+    return result;
+  } catch (e) {
+    console.error("getColumn error", e);
+    return [];
+  }
+}
+
+export async function getColumns(boardId: string) {
+  try {
+    if (!column) await init();
+
+    const result = await column.find({ boardId }).toArray();
+
+    return result;
+  } catch (e) {
+    console.error("getColumns error", e);
     return [];
   }
 }
