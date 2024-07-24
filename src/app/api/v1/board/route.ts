@@ -1,4 +1,4 @@
-import { createBoard, getBoard } from "@/lib/db";
+import { createBoard, getBoard, getColumns, getTasks } from "@/lib/db";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -12,9 +12,11 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const result = await getBoard(id);
+    const board = await getBoard(id);
+    const columns = await getColumns(id);
+    const tasks = await getTasks(id);
 
-    return Response.json(result);
+    return Response.json({ ...board.data, columns, tasks });
   } catch (e) {
     console.error("getBoards error", e);
     return Response.json({ error: "An error occurred" }, { status: 500 });
