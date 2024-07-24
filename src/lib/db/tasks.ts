@@ -26,7 +26,7 @@ export async function createTask(data: OptionalId<Task>) {
   try {
     if (!task) await init();
 
-    const result = await task.insertOne(task);
+    const result = await task.insertOne(data);
 
     return result;
   } catch (e) {
@@ -90,6 +90,30 @@ export async function updateTask(id: string, data: Task) {
   }
 }
 
+export async function patchTask(id: string, data: Partial<Task>) {
+  try {
+    if (!task) await init();
+    // Remap data if it contains an _id
+    const sanitizedResult = {
+      ...data,
+      ...(data.columnId && { columnId: new ObjectId(data.columnId) }),
+      ...(data.projectId && { boardId: new ObjectId(data.projectId) })
+    };
+
+    const result = await task.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { ...sanitizedResult } }
+    );
+
+    console.log('result', result);
+
+    return result;
+  } catch (e) {
+    console.error("patchTask error", e);
+    return [];
+  }
+}
+
 export async function deleteTask(id: string) {
   try {
     if (!task) await init();
@@ -103,7 +127,7 @@ export async function deleteTask(id: string) {
   }
 }
 
-export async function getTasksByColumnId(columnId: string) {
+export async function getTasksByColumnId(columnId: ObjectId) {
   try {
     if (!task) await init();
 

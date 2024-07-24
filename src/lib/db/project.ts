@@ -38,10 +38,11 @@ export async function getProject(id: ObjectId) {
 
 export async function getProjectBySlug(slug: string) {
   try {
-    const user = await getSessionUser();
+    // const user = await getSessionUser();
     if (!project) await init();
 
-    const result = await project.findOne({ slug, createdBy: user.data._id });
+    const result = await project.findOne({ slug });
+    // const result = await project.findOne({ slug, createdBy: user.data._id });
 
     return result;
   } catch (e) {

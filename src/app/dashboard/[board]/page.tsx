@@ -1,10 +1,10 @@
 "use client";
 
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { KanbanBoard } from "@/components/KanbanBoard";
-import { ColumnStatus, Task, TaskId } from "@/types";
+import { Column, ColumnStatus, Task, TaskId } from "@/types";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { Collection } from "mongodb";
 
 export default function ProjectPage({ params }: { params: { board: string } }) {
   const { board } = params;
@@ -13,7 +13,7 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
     fetch(url).then((res) => res.json())
   );
   const { status } = useSession();
-  const router = useRouter();
+  // 
 
   console.log(data?.columns);
 
@@ -27,67 +27,6 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
             title: column.name,
             tasks: column.tasks,
           }))}
-          tasks={{
-            "task-1": {
-              _id: "task-1",
-              title: "Implement login functionality ",
-              description:
-                "Create a secure login system with email and password",
-              createdAt: new Date("2024-07-10"),
-              status: "to-do",
-              assignee: "Alice",
-              priority: "high",
-              projectId: "project-1", // Add the projectId property
-              columnId: "in-progress", // Add the columnId property
-            },
-            "task-2": {
-              _id: "task-2",
-              title: "Design landing page",
-              description:
-                "Create a visually appealing landing page for the website",
-              createdAt: new Date("2024-07-11"),
-              assignee: "Bob",
-              status: "to-do",
-              priority: "medium",
-              projectId: "project-1", // Add the projectId property
-              columnId: "in-progress", // Add the columnId property
-            },
-            "task-3": {
-              _id: "task-3",
-              title: "Optimize database queries",
-              description:
-                "Improve the performance of database queries for faster load times",
-              createdAt: new Date("2024-07-12"),
-              assignee: "Charlie",
-              status: "in-progress",
-              priority: "high",
-              projectId: "project-1", // Add the projectId property
-              columnId: "in-progress", // Add the columnId property
-            },
-            "task-4": {
-              _id: "task-4",
-              title: "Write unit tests",
-              description:
-                "Create comprehensive unit tests for the backend API",
-              createdAt: new Date("2024-07-13"),
-              assignee: "David",
-              status: "in-progress",
-              priority: "low",
-              projectId: "project-1", // Add the projectId property
-              columnId: "in-progress", // Add the columnId property
-            },
-            "task-5": {
-              _id: "task-5",
-              title: "Implement dark mode",
-              description: "Add a dark mode option to improve user experience",
-              createdAt: new Date("2024-07-14"),
-              assignee: "Eve",
-              status: "done",
-              priority: "medium",
-              projectId: "project-1", // Add the projectId property
-              columnId: "in-progress", // Add the columnId property
-            },
-          }}
           onColumnCreate={function (
             column: Omit<ColumnStatus, "id" | "tasks">
           ): void {
@@ -111,15 +50,52 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
           }}
           onTaskMove={function (
             taskId: TaskId,
-            sourceColumn: string,
+            _sourceColumn: string,
             targetColumn: string
           ): void {
-            // TODO: implement here the call to the API to update the task's column
-            console.log("Task moved:", {
-              taskId,
-              sourceColumn,
-              targetColumn,
-            });
+            mutate(
+              `/api/v1/project/${board}`,
+              async (currentData) => {
+                try {
+                  const response = await fetch(`/api/v1/task/${taskId}`, {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      columnId: targetColumn,
+                    }),
+                  });
+          
+                  if (!response.ok) {
+                    throw new Error("Failed to update task");
+                  }
+          
+                  const updatedTask = await response.json();
+          
+                  // Update the local data
+                  const updatedColumns = currentData.columns.map((column: ColumnStatus) => {
+                    if (column._id === targetColumn) {
+                      return {
+                        ...column,
+                        tasks: [...column.tasks, updatedTask],
+                      };
+                    }
+                    return {
+                      ...column,
+                      tasks: column.tasks.filter((task) => task._id !== taskId),
+                    };
+                  });
+          
+                  return { ...currentData, columns: updatedColumns };
+                } catch (error) {
+                  console.error("Error moving task:", error);
+                  // Revert the optimistic update
+                  return currentData;
+                }
+              },
+              { revalidate: false }
+            );
           }}
         />
       )}
