@@ -102,3 +102,16 @@ export async function deleteTask(id: string) {
     return [];
   }
 }
+
+export async function getTasksByColumnId(columnId: string) {
+  try {
+    if (!task) await init();
+
+    const result = await task.find({ columnId }).toArray();
+
+    return result;
+  } catch (e) {
+    console.error("getTasksByColumnId error", e);
+    return [];
+  }
+}

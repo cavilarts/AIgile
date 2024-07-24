@@ -23,6 +23,21 @@ async function init() {
   await init();
 })();
 
+export async function getColumnsByProjectId(projectId: string) {
+  if (!column) await init();
+
+  try {
+    if (!column) await init();
+
+    const result = await column.find({ projectId }).toArray();
+
+    return result;
+  } catch (e) {
+    console.error("getColumnsByProjectId error", e);
+    return [];
+  }
+}
+
 export async function createColumn(data: OptionalId<Column>) {
   try {
     if (!column) await init();

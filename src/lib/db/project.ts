@@ -1,9 +1,10 @@
 import { Db, Collection, ObjectId, OptionalId } from "mongodb";
 import clientPromise from "./mongoConnection";
 import { Optional, Project } from "@/types";
+import { getSessionUser } from "./saveUser";
 
 let db: Db;
-let project: Collection<Optional<Project, 'tasks' | 'boardName'>>;
+let project: Collection<Optional<Project, "tasks" | "boardName">>;
 let client;
 
 async function init() {
@@ -27,6 +28,20 @@ export async function getProject(id: ObjectId) {
     if (!project) await init();
 
     const result = await project.findOne({ _id: new ObjectId(id) });
+
+    return result;
+  } catch (e) {
+    console.error("getProjects error", e);
+    return [];
+  }
+}
+
+export async function getProjectBySlug(slug: string) {
+  try {
+    const user = await getSessionUser();
+    if (!project) await init();
+
+    const result = await project.findOne({ slug, createdBy: user.data._id });
 
     return result;
   } catch (e) {

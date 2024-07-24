@@ -1,6 +1,8 @@
 import { Db, Collection, ObjectId } from "mongodb";
 import clientPromise from "./mongoConnection";
 import { User } from "@/types";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/auth";
 
 let db: Db;
 let user: Collection<User>;
@@ -53,6 +55,21 @@ export async function getUserByEmail(email: string) {
     console.error("getUserByEmail error", e);
     return;
   }
+}
+
+export async function getSessionUser() {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session?.user?.email) {
+    throw new Error("You must be signed in to submit a project");
+  }
+
+  const user = await getUserByEmail(session?.user?.email);
+  if(!user || !user.data) {
+    throw new Error("User not found");
+  }
+
+  return user;
 }
 
 export async function createUser(data: User) {

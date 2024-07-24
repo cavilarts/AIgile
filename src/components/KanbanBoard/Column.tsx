@@ -45,6 +45,8 @@ export const Column: React.FC<ColumnProps> = ({
     onDragLeave: () => setIsHovering(false),
   });
 
+  console.log("tasks", tasks);
+
   return (
     <Card
       ref={dropRef}

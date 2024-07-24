@@ -1,31 +1,16 @@
 import { ProjectGenerated } from "@/types/project.types";
 import { createBoard, patchBoard } from "../../lib/db/board";
 import { createProject, getProject, patchProject } from "../../lib/db/project";
-import { createTasks, createColumns, getUserByEmail } from "../../lib/db";
+import { createTasks, createColumns, getSessionUser } from "../../lib/db";
 import { ObjectId } from "mongodb";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 
 export const submitProject = async (project: ProjectGenerated) => {
-  const session = await getServerSession(authOptions);
 
-  if (!session || !session?.user?.email) {
-    return Response.json(
-      { error: "You must be signed in to submit a project" },
-      { status: 401 }
-    );
-  }
-  const user = await getUserByEmail(session?.user?.email);
-  if(!user || !user.data) {
-    return Response.json(
-      { error: "You must be registered to submit a project" },
-      { status: 401 }
-    );
-  }
   
   const { boardName, projectDescription, boardDescription,  tasks } = project;
 
   try {
+    const user = await getSessionUser();
     const slug = boardName.toLowerCase().replace(/ /g, "-");
 
     const project = await createProject({
