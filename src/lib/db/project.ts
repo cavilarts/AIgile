@@ -1,4 +1,4 @@
-import { Db, Collection, ObjectId, OptionalId } from "mongodb";
+import { Db, Collection, ObjectId, OptionalId, WithId } from "mongodb";
 import clientPromise from "./mongoConnection";
 import { Optional, Project } from "@/types";
 import { getSessionUser } from "./saveUser";
@@ -36,17 +36,21 @@ export async function getProject(id: ObjectId) {
   }
 }
 
-export async function getProjectBySlug(slug: string) {
+export async function getProjectBySlug(
+  slug: string
+): Promise<WithId<Optional<Project, "boardName" | "tasks">> | null> {
   try {
     const user = await getSessionUser();
     if (!project) await init();
 
     const result = await project.findOne({ slug, createdBy: user.data._id });
 
+    if (!result) return null;
+
     return result;
   } catch (e) {
     console.error("getProjects error", e);
-    return [];
+    return null;
   }
 }
 

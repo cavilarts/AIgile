@@ -1,6 +1,4 @@
-import { ObjectId, OptionalId } from "mongodb";
-
-export type ColumnId = string;
+import { ObjectId } from "mongodb";
 
 export type Column = {
   name: string;
