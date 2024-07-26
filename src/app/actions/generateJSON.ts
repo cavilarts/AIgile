@@ -18,7 +18,7 @@ export async function generateJSON(messages: CoreMessage[]) {
     const { text } = await generateText({
       model: google("models/gemini-1.5-pro-latest"),
       system: `
-      Generate a JSON with the following structure as defined in the conversation. Do not include any explanatory text, only output valid JSON
+      Generate a JSON with the following structure as defined in the conversation. Do not include any explanatory text, only output valid JSON, and don't ask more questions.
       {
         "projectName": string,
         "projectDescription": string,
