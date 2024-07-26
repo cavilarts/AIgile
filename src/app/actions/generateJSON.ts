@@ -34,6 +34,7 @@ export async function generateJSON(messages: CoreMessage[]) {
       `,
       messages,
     });
+    console.log("text generated:", text);
 
     const extractedJSON = extractJSONfromString(text);
     if(!extractedJSON) throw new Error("No JSON found in the generated text");
