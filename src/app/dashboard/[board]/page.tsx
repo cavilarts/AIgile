@@ -1,21 +1,19 @@
 "use client";
 
-import useSWR, { mutate } from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import { KanbanBoard } from "@/components/KanbanBoard";
-import { Column, ColumnStatus, Task, TaskId } from "@/types";
+import { Column, ColumnStatus, TaskId } from "@/types";
 import { useSession } from "next-auth/react";
 import { Collection } from "mongodb";
+import { getBoard, updateTaskInBoard, Task } from "./api";
+import { cloneDeep } from "lodash";
 
 export default function ProjectPage({ params }: { params: { board: string } }) {
   const { board } = params;
-
-  const { data, isLoading, error } = useSWR(`/api/v1/project/${board}`, (url) =>
-    fetch(url).then((res) => res.json())
-  );
-  const { status } = useSession();
-  // 
-
-  console.log(data?.columns);
+  const { data, isLoading, mutate } = useSWR(`/api/v1/project/${board}`, getBoard);
+  const { status, data: sessionData } = useSession();
+  
+  console.log('data', data);
 
   return (
     <>
@@ -50,52 +48,42 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
           }}
           onTaskMove={function (
             taskId: TaskId,
-            _sourceColumn: string,
+            sourceColumn: string,
             targetColumn: string
           ): void {
-            mutate(
-              `/api/v1/project/${board}`,
-              async (currentData) => {
-                try {
-                  const response = await fetch(`/api/v1/task/${taskId}`, {
-                    method: "PATCH",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      columnId: targetColumn,
-                    }),
-                  });
-          
-                  if (!response.ok) {
-                    throw new Error("Failed to update task");
+            const optimisticData = cloneDeep(data);
+            let extractedTask: Task;
+
+            optimisticData.columns = optimisticData.columns.map((column) => {
+              if (column._id == sourceColumn) {
+                const columnWithoutMovedTask = column.tasks.filter((task: Task) => {
+                  if (task._id == taskId) {
+                    extractedTask = task;
                   }
-          
-                  const updatedTask = await response.json();
-          
-                  // Update the local data
-                  const updatedColumns = currentData.columns.map((column: ColumnStatus) => {
-                    if (column._id === targetColumn) {
-                      return {
-                        ...column,
-                        tasks: [...column.tasks, updatedTask],
-                      };
-                    }
-                    return {
-                      ...column,
-                      tasks: column.tasks.filter((task) => task._id !== taskId),
-                    };
-                  });
-          
-                  return { ...currentData, columns: updatedColumns };
-                } catch (error) {
-                  console.error("Error moving task:", error);
-                  // Revert the optimistic update
-                  return currentData;
-                }
-              },
-              { revalidate: false }
-            );
+
+                  return task._id !== taskId
+                });
+
+                return { ...column, tasks: columnWithoutMovedTask };
+              } else {
+                return column;
+              }
+            });
+
+            optimisticData.columns = optimisticData.columns.map((column) => {
+              if (column._id == targetColumn) {
+                column.tasks.push(extractedTask);
+              }
+              return column;
+            });
+
+
+            mutate((currentData) => updateTaskInBoard(currentData, { taskId, sourceColumn, targetColumn }), {
+              optimisticData: optimisticData,
+              rollbackOnError: false,
+              populateCache: false,
+              revalidate: true
+            });
           }}
         />
       )}

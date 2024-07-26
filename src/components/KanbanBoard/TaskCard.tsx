@@ -8,7 +8,7 @@ import { Task, TaskId } from "@/types";
 import { capitalize } from "@/lib";
 
 export type TaskCardProps = {
-  task: Task;
+  task: Task | undefined;
   onEdit: (taskId: TaskId, updatedTask: Partial<Task>) => void;
   columnId: string;
 };
@@ -20,12 +20,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 }) => {
   const dragRef = useRef<HTMLDivElement>(null);
 
-  useDrag({ data: task._id }, dragRef, {
+  useDrag({ data: task?._id }, dragRef, {
     onDragStart: (e) => {
-      e.dataTransfer.setData("taskId", String(task._id));
+      e.dataTransfer.setData("taskId", String(task?._id));
       e.dataTransfer.setData("sourceColumnId", columnId);
     },
   });
+
+  if(!task) return null;
 
   return (
     <Card

@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 
 import { fontSans, fontMono } from "@/config/fonts";
 import "@/styles/globals.css";
+import { SWRConfig } from "swr";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -12,7 +13,17 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <NextUIProvider navigate={router.push}>
       <NextThemesProvider>
-        <Component {...pageProps} />
+        <SWRConfig
+          value={{
+            refreshInterval: 3000,
+            fetcher: (resource, init) => fetch(resource, init).then(res => res.json()),
+            onError: (error) => {
+              console.error(error);
+            },
+          }}
+        >
+          <Component {...pageProps} />
+        </SWRConfig>
       </NextThemesProvider>
     </NextUIProvider>
   );

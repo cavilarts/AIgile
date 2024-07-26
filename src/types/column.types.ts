@@ -1,4 +1,5 @@
 import { ObjectId  } from "mongodb";
+import { Task } from "./task.types";
 
 export type ColumnId = ObjectId | string;
 
@@ -12,8 +13,6 @@ export type Column = {
   tasks: ObjectId[];
 };
 
-export type ColumnStatus = {
-  id: string;
-  title: string;
-  tasks: string[];
+export type ColumnStatus = Omit<Column, "tasks"> & {
+  tasks: Task[];
 };

@@ -1,13 +1,10 @@
 import { Column } from "./Column";
 import { AddEditTaskForm } from "./AddEditTaskForm";
-
 import { ColumnStatus, Task, TaskId } from "@/types";
 import { Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
-import { ObjectId } from "mongodb";
 
 export type KanbanBoardProps = {
   columns: ColumnStatus[];
-  tasks: Record<string, Task>;
   onTaskMove: (
     taskId: TaskId,
     sourceColumn: string,
@@ -24,7 +21,6 @@ export type KanbanBoardProps = {
 
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   columns,
-  tasks,
   onTaskMove,
   onTaskEdit,
   onTaskCreate,
@@ -41,13 +37,13 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         </NavbarContent>
       </Navbar>
       <div className="h-full w-full">
-        <div className="flex overflow-x-auto space-x-4 space-y-4 p-4 w-full bg-none m-auto flex-wrap">
+        <div className="flex overflow-x-auto space-x-4 space-y-4 p-4 w-full bg-none m-auto flex-no-wrap">
           {columns.map((column, index) => {
             if (!column) return null;
 
             return (
               <Column
-                key={column.id}
+                key={String(column.id)}
                 column={column}
                 index={index}
                 tasks={column.tasks}

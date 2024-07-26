@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Children, useRef, useState } from "react";
 import { useDrop } from "ahooks";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import classNames from "classnames";
@@ -45,8 +45,6 @@ export const Column: React.FC<ColumnProps> = ({
     onDragLeave: () => setIsHovering(false),
   });
 
-  console.log("tasks", tasks);
-
   return (
     <Card
       ref={dropRef}
@@ -56,18 +54,19 @@ export const Column: React.FC<ColumnProps> = ({
       )}
     >
       <CardHeader>
-        <h4 className="font-bold text-large">{column.title}</h4>
+        <h4 className="font-bold text-large">{column?.title}</h4>
       </CardHeader>
 
       <CardBody className="min-height-500 space-y-4">
-        {tasks.map((task) => (
+        {Children.toArray(
+tasks.map((task) => (
           <TaskCard
-            key={String(task._id)}
-            columnId={column.id}
+            columnId={String(column.id)}
             task={task}
             onEdit={onTaskEdit}
           />
-        ))}
+        ))
+        )}
       </CardBody>
     </Card>
   );
