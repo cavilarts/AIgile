@@ -1,19 +1,19 @@
+import { ColumnApi, TaskApi } from "@/types";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  Modal,
   Button,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Select,
   SelectItem,
-  ModalHeader,
-  ModalFooter,
   useDisclosure,
-  ModalContent,
-  ModalBody,
 } from "@nextui-org/react";
 import dynamic from "next/dynamic";
 import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { ColumnApi, ColumnStatus, TaskApi } from "@/types";
 import * as yup from "yup";
 
 const ReactQuill = dynamic(() => import("react-quill"), {
@@ -21,7 +21,6 @@ const ReactQuill = dynamic(() => import("react-quill"), {
 });
 
 import "react-quill/dist/quill.snow.css";
-import { Status } from "@/constants/status";
 
 export type onTaskCreateParams = Omit<
   TaskApi,

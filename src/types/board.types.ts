@@ -41,6 +41,14 @@ export type ColumnApi = {
   tasks: TaskApi[];
 };
 
+export type ColumnDB = {
+  _id?: ColumnId;
+  name: string;
+  boardId: ObjectId;
+  projectId: ObjectId;
+  tasks: ObjectId[];
+};
+
 export type TaskApi = {
   _id: TaksId;
   title: string;

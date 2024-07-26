@@ -1,6 +1,6 @@
-import { Db, Collection, ObjectId } from "mongodb";
+import { BoardDB } from "@/types";
+import { Collection, Db, ObjectId } from "mongodb";
 import clientPromise from "./mongoConnection";
-import { BoardApi, BoardDB, Optional } from "@/types";
 
 let db: Db;
 let boards: Collection<Partial<BoardDB>>;
