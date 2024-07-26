@@ -50,7 +50,12 @@ export async function getProjectBySlug(slug: string) {
   }
 }
 
-export async function createProject(data: Optional<Project, 'tasks' | 'boardName' | 'createdAt' | 'lastModifiedAt'>) {
+export async function createProject(
+  data: Optional<
+    Project,
+    "tasks" | "boardName" | "createdAt" | "lastModifiedAt"
+  >
+) {
   try {
     if (!project) await init();
 
@@ -67,7 +72,10 @@ export async function createProject(data: Optional<Project, 'tasks' | 'boardName
   }
 }
 
-export async function patchProject(id: ObjectId, data: Partial<Omit<Project, 'createdAt' | 'lastModifiedAt'>>) {
+export async function patchProject(
+  id: string,
+  data: Partial<Omit<Project, "createdAt" | "lastModifiedAt">>
+) {
   try {
     if (!project) await init();
 
