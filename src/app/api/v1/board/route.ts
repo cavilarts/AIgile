@@ -1,4 +1,10 @@
-import { createBoard, getBoard, getColumns, getTasks } from "@/lib/db";
+import {
+  createBoard,
+  getBoard,
+  getColumns,
+  getTasks,
+  patchBoard,
+} from "@/lib/db";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -54,6 +60,33 @@ export async function POST(req: NextRequest) {
     return Response.json(result);
   } catch (e) {
     console.error("createBoard error", e);
+    return Response.json({ error: "An error occurred" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  const { id, name, description, columns, tasks } = await req.json();
+
+  if (!id) {
+    return Response.json(
+      { error: "Please provide a board id" },
+      { status: 400 }
+    );
+  }
+
+  const data = {
+    name,
+    description,
+    columns,
+    tasks,
+  };
+
+  try {
+    const result = await patchBoard(id, data);
+
+    return Response.json(result);
+  } catch (e) {
+    console.error("updateBoard error", e);
     return Response.json({ error: "An error occurred" }, { status: 500 });
   }
 }
