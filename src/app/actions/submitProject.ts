@@ -35,17 +35,17 @@ export const submitProject = async (project: ProjectGenerated) => {
     const savedColumns = await createColumns([
       {
         name: "To Do",
-        boardId,
+        boardId: new ObjectId(boardId),
         projectId,
       },
       {
         name: "In Progress",
-        boardId,
+        boardId: new ObjectId(boardId),
         projectId,
       },
       {
         name: "Done",
-        boardId,
+        boardId: new ObjectId(boardId),
         projectId,
       },
     ]);
@@ -80,7 +80,7 @@ export const submitProject = async (project: ProjectGenerated) => {
     }
 
     for (const b in columnIds) {
-      listOfColumns.push(columnIds[b]);
+      listOfColumns.push(new ObjectId(columnIds[b]));
     }
 
     await patchBoard(boardId, {

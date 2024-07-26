@@ -8,7 +8,9 @@ import { extractJSONfromString } from '@/lib';
 
 export async function POST(req: NextRequest) {
   try {
-    if(!req.body) { throw new Error("No messages provided."); }
+    if (!req.body) { throw new Error("No messages provided."); }
+    
+    console.log("req.body:", req.body);
 
     const messages: CoreMessage[] = await req.json();
 
@@ -30,6 +32,7 @@ export async function POST(req: NextRequest) {
       messages,
     });
 
+    console.log("text generated:", text);
 
     const extractedJSON = extractJSONfromString(text);
     if(!extractedJSON) { throw new Error("No JSON found in the generated text"); }
