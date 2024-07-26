@@ -37,7 +37,7 @@ export async function submitUserMessage(content: string) {
   (async () => {
     try {
       const { textStream: newMessageStream } = await streamText({
-        model: google("models/gemini-1.5-pro-latest"),
+        model: google("models/gemini-1.5-flash-latest"),
         system: `
           As an AI assistant, your role is to guide the user through providing essential project information and requirements. Maintain the conversation in the dominant language used by the user and avoid referencing any specific applications for creating or managing boards. Your objective is to facilitate the collection of detailed information and confirm all details before generating clear and comprehensive user stories.  
 

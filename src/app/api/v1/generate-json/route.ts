@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const messages: CoreMessage[] = await req.json();
 
     const { text } = await generateText({
-      model: google("models/gemini-1.5-pro-latest"),
+      model: google("models/gemini-1.5-flash-latest"),
       system: `
       return randomJSON
       {
