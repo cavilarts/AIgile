@@ -13,6 +13,7 @@ export type ColumnProps = {
   tasks: TaskApi[];
   index: number;
   onTaskEdit: (taskId: TaskId, updatedTask: Partial<TaskApi>) => void;
+  onTaskDelete: (taskId: TaskId) => void;
   onTaskMove: (
     taskId: TaskId,
     sourceColumn: string,
@@ -25,6 +26,7 @@ export const Column: React.FC<ColumnProps> = ({
   column,
   tasks,
   onTaskEdit,
+  onTaskDelete,
   onTaskMove,
 }) => {
   const dropRef = useRef(null);
@@ -65,6 +67,7 @@ export const Column: React.FC<ColumnProps> = ({
               columnId={String(column._id)}
               task={task}
               onEdit={onTaskEdit}
+              onDelete={onTaskDelete}
             />
           ))
         )}

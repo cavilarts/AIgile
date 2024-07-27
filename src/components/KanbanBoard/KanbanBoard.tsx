@@ -12,6 +12,7 @@ export type KanbanBoardProps = {
     targetColumn: string
   ) => void;
   onTaskEdit: (taskId: TaskId, updatedTask: Partial<TaskApi>) => void;
+  onTaskDelete: (taskId: TaskId) => void;
   // TODO: Implement the onTaskCreate function and the create modal
   onTaskCreate: (task: onTaskCreateParams) => void;
   // TODO: Implement the onColumnCreate function and the create modal
@@ -24,6 +25,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   columns,
   onTaskMove,
   onTaskEdit,
+  onTaskDelete,
   onTaskCreate,
   onColumnCreate,
   onColumnEdit,
@@ -51,6 +53,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 tasks={column.tasks}
                 onTaskEdit={onTaskEdit}
                 onTaskMove={onTaskMove}
+                onTaskDelete={onTaskDelete}
               />
             );
           })}

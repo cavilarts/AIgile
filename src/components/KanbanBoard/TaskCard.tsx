@@ -9,13 +9,15 @@ import { EllipsisVertical } from "../icons";
 
 export type TaskCardProps = {
   task: TaskApi;
-  onEdit: (taskId: TaskId, updatedTask: Partial<TaskApi>) => void;
+  onEdit: (taskId: TaskId, updatedData: Partial<TaskApi>) => void;
+  onDelete: (taskId: TaskId) => void;
   columnId: string;
 };
 
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   onEdit,
+  onDelete,
   columnId,
 }) => {
   const dragRef = useRef<HTMLDivElement>(null);
@@ -23,18 +25,17 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   const handleAction = useCallback((key: string) => {
     if (key === "edit") {
-      // Handle edit action
-      console.log("Edit task", task._id);
+      // TODO: implement the edit modal
+      onEdit(task._id, task);
     } else if (key === "delete") {
-      onOpen(); // Open the confirmation modal
+      onOpen();
     }
-  }, [task._id, onOpen]);
+  }, [onEdit, task, onOpen]);
 
   const handleDeleteConfirm = useCallback(() => {
-    console.log("Deleting task", task._id);
-    // Implement your delete logic here
-    onOpenChange(false); // Close the modal
-  }, [task._id, onOpenChange]);
+    onDelete(task._id);
+    onOpenChange();
+  }, [onDelete, onOpenChange, task._id]);
 
   useDrag({ data: task?._id }, dragRef, {
     onDragStart: (e) => {
@@ -47,10 +48,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   return (
     <>
-      <Card
-        ref={dragRef}
-        className="margin-bottom-8 transition-opacity-0.2s cursor-move"
-      >
+      <Card ref={dragRef} className="margin-bottom-8 transition-opacity-0.2s cursor-move" >
         <CardHeader className="relative overflow-visible flex justify-between items-center">
           <h5 className="font-bold text-large">{task.title}</h5>
 
@@ -78,7 +76,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           {task?.assignee && <span>Assignee: {String(task.assignee)}</span>}
         </CardBody>
         <CardFooter>
-          <div>
             {task?.priority && (
               <Chip
                 className="ml-2 mb-1"
@@ -88,7 +85,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                 {capitalize(task.priority)}
               </Chip>
             )}
-          </div>
         </CardFooter>
       </Card>
 

@@ -1,19 +1,31 @@
 "use client";
 
 import { KanbanBoard } from "@/components/KanbanBoard";
+import { ToastContainer, toast } from 'react-toastify';
 import { onTaskCreateParams } from "@/components/KanbanBoard/AddEditTaskForm";
 import { ColumnApi, TaskApi, TaskId } from "@/types";
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
-import { getBoard, updateTaskInBoard } from "./api";
+import { deleteTaskInBoard, getBoard, updateTaskInBoard } from "./api";
 import { cloneDeep } from "lodash";
 
 export default function ProjectPage({ params }: { params: { board: string } }) {
   const { board } = params;
+  const notifyDelete = () => toast("Task deleted successfully", { type: "success" });
+  const notifyError = () => toast("An error occurred", { type: "error" });
   const { data, isLoading, mutate, error } = useSWR(`/api/v1/project/${board}`, getBoard);
   const { status } = useSession();
 
-  console.log(data?.columns);
+  const onTaskDelete = function (taskId: TaskId): void {
+    mutate((currentData) => deleteTaskInBoard(currentData, taskId), {
+      rollbackOnError: false,
+      populateCache: false,
+      revalidate: true
+    }).then(notifyDelete).catch((error) => {
+      console.error("Error deleting task:", error);
+      notifyError();
+    });
+  };
 
   return (
     <>
@@ -40,6 +52,7 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
             // TODO: implement here the call to the API to create a new task, but first we need to create the create modal
             return console.error("Function not implemented.");
           }}
+          onTaskDelete={onTaskDelete}
           onTaskEdit={function (
             taskId: TaskId,
             updatedTask: Partial<TaskApi>
@@ -88,6 +101,7 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
           }}
         />
       )}
+      <ToastContainer />
     </>
   );
 }
