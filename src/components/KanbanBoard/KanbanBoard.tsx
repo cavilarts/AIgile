@@ -1,7 +1,6 @@
 import { AddEditTaskForm, onTaskCreateParams } from "./AddEditTaskForm";
 import { ColumnApi } from "@/types";
-
-import { ColumnStatus, TaskApi, TaskId } from "@/types";
+import { TaskApi, TaskId } from "@/types";
 import { Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
 import { Column } from "./Column";
 
@@ -16,7 +15,7 @@ export type KanbanBoardProps = {
   // TODO: Implement the onTaskCreate function and the create modal
   onTaskCreate: (task: onTaskCreateParams) => void;
   // TODO: Implement the onColumnCreate function and the create modal
-  onColumnCreate: (column: Omit<ColumnStatus, "id" | "tasks">) => void;
+  onColumnCreate: (column: Omit<ColumnApi, "id" | "tasks">) => void;
   // TODO: Implement the onColumnEdit function and the edit modal
   onColumnEdit: (newOrder: string[]) => void;
 };
@@ -39,7 +38,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         </NavbarContent>
       </Navbar>
       <div className="h-full w-full">
-        <div className="flex overflow-x-auto space-x-4 space-y-4 p-4 w-full bg-none m-auto flex-wrap">
+        <div className="flex overflow-x-auto space-x-4 space-y-4 p-4 w-full bg-none m-auto flex-no-wrap">
           {columns.map((column, index) => {
             if (!column) return null;
 

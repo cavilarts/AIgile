@@ -1,21 +1,17 @@
 "use client";
 
-import useSWR from "swr";
 import { KanbanBoard } from "@/components/KanbanBoard";
-import { BoardApi, ColumnStatus, TaskApi, TaskId } from "@/types";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { onTaskCreateParams } from "@/components/KanbanBoard/AddEditTaskForm";
+import { ColumnApi, TaskApi, TaskId } from "@/types";
+import { useSession } from "next-auth/react";
+import useSWR from "swr";
+import { getBoard, updateTaskInBoard } from "./api";
+import { cloneDeep } from "lodash";
 
 export default function ProjectPage({ params }: { params: { board: string } }) {
   const { board } = params;
-
-  const { data, isLoading, error } = useSWR(
-    `/api/v1/project/${board}`,
-    (url): Promise<BoardApi> => fetch(url).then((res) => res.json())
-  );
+  const { data, isLoading, mutate, error } = useSWR(`/api/v1/project/${board}`, getBoard);
   const { status } = useSession();
-  const router = useRouter();
 
   console.log(data?.columns);
 
@@ -31,7 +27,7 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
             tasks: column.tasks,
           }))}
           onColumnCreate={function (
-            column: Omit<ColumnStatus, "id" | "tasks">
+            column: Omit<ColumnApi, "id" | "tasks">
           ): void {
             // TODO: implement here the call to the API to create a new column
             console.error("Function not implemented.");
@@ -56,11 +52,38 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
             sourceColumn: string,
             targetColumn: string
           ): void {
-            // TODO: implement here the call to the API to update the task's column
-            console.log("Task moved:", {
-              taskId,
-              sourceColumn,
-              targetColumn,
+            const optimisticData = cloneDeep(data);
+            let extractedTask: TaskApi;
+
+            optimisticData.columns = optimisticData.columns.map((column) => {
+              if (column._id == sourceColumn) {
+                const columnWithoutMovedTask = column.tasks.filter((task: TaskApi) => {
+                  if (task._id == taskId) {
+                    extractedTask = task;
+                  }
+
+                  return task._id !== taskId
+                });
+
+                return { ...column, tasks: columnWithoutMovedTask };
+              } else {
+                return column;
+              }
+            });
+
+            optimisticData.columns = optimisticData.columns.map((column) => {
+              if (column._id == targetColumn) {
+                column.tasks.push(extractedTask);
+              }
+              return column;
+            });
+
+
+            mutate((currentData) => updateTaskInBoard(currentData, { taskId, sourceColumn, targetColumn }), {
+              optimisticData: optimisticData,
+              rollbackOnError: false,
+              populateCache: false,
+              revalidate: true
             });
           }}
         />

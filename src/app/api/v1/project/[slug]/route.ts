@@ -1,8 +1,8 @@
 import {
   getColumnsByProjectId,
   getProjectBySlug,
-  getTask,
   getTasksByColumnId,
+  getTasksQuery,
 } from "@/lib/db";
 import { NextRequest } from "next/server";
 
@@ -21,19 +21,24 @@ export async function GET(req: NextRequest) {
     if (!project) throw new Error("Project not found");
     const columns = await getColumnsByProjectId(String(project._id));
 
+    console.log('columns', columns);
+
     if (!project) {
       return Response.json({ error: "Project not found" }, { status: 404 });
     }
 
     const columnsWithTasks = await Promise.all(
       columns.map(async (column) => {
-        const tasks = await getTasksByColumnId(String(column._id));
+        const tasks = await getTasksQuery({
+          columnId: String(column._id),
+          projectId: String(project._id),
+        });
 
         return { ...column, tasks };
       })
     );
 
-    console.log(columnsWithTasks);
+    console.log('columnsWithTasks', columnsWithTasks);
 
     return Response.json({ ...project, columns: columnsWithTasks });
   } catch (e) {

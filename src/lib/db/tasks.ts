@@ -93,6 +93,30 @@ export async function updateTask(
   }
 }
 
+export async function patchTask(id: string, data: Partial<TaskDB>) {
+  try {
+    if (!task) await init();
+    // Remap data if it contains an _id
+    const sanitizedResult = {
+      ...data,
+      ...(data.columnId && { columnId: new ObjectId(data.columnId) }),
+      ...(data.projectId && { boardId: new ObjectId(data.projectId) })
+    };
+
+    const result = await task.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { ...sanitizedResult } }
+    );
+
+    console.log('result', result);
+
+    return result;
+  } catch (e) {
+    console.error("patchTask error", e);
+    return [];
+  }
+}
+
 export async function deleteTask(id: string) {
   try {
     if (!task) await init();
@@ -110,11 +134,30 @@ export async function getTasksByColumnId(columnId: string): Promise<TaskApi[]> {
   try {
     if (!task) await init();
 
-    const result = await task.find({ columnId }).toArray();
+    const result = await task.find({ columnId: new ObjectId(columnId) }).toArray();
 
     return result;
   } catch (e) {
     console.error("getTasksByColumnId error", e);
+    return [];
+  }
+}
+
+export async function getTasksQuery(query: Partial<TaskDB>): Promise<TaskApi[]> {
+  try {
+    if (!task) await init();
+    const sanitizedQuery = {
+      ...query,
+      ...(query.columnId && { columnId: new ObjectId(query.columnId) }),
+      ...(query.projectId && { projectId: new ObjectId(query.projectId) })
+    };
+
+
+    const result = await task.find(sanitizedQuery).toArray();
+
+    return result;
+  } catch (e) {
+    console.error("getTasksQuery error", e);
     return [];
   }
 }

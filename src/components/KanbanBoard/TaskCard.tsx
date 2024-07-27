@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { useDrag } from "ahooks";
 import { Card, CardBody, ChipProps, CardHeader, Chip } from "@nextui-org/react";
-
 import { TaskApi, TaskId } from "@/types";
 import { capitalize } from "@/lib";
 
@@ -20,12 +19,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 }) => {
   const dragRef = useRef<HTMLDivElement>(null);
 
-  useDrag({ data: task._id }, dragRef, {
+  useDrag({ data: task?._id }, dragRef, {
     onDragStart: (e) => {
-      e.dataTransfer.setData("taskId", String(task._id));
+      e.dataTransfer.setData("taskId", String(task?._id));
       e.dataTransfer.setData("sourceColumnId", columnId);
     },
   });
+
+  if(!task) return null;
 
   return (
     <Card
