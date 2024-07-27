@@ -16,16 +16,19 @@ export default function BotMessage({ content }: BotMessageProps) {
         <CardBody>
           <MemoizedReactMarkdown
             components={{
-              p({ children}) {
+              p({ children }) {
                 return <p className="text-sm">{children}</p>;
               },
               a({ children, href }) {
-                if (children === "Generate visual output") {
+                if (
+                  children === "Generate visual output" ||
+                  children === "Generar visual output"
+                ) {
                   // It's not possible to pass props to the component given the server nature of the component
                   return <GenerateJSONButton />;
                 }
 
-                return <Link href={href ?? '#'}>{children}</Link>;
+                return <Link href={href ?? "#"}>{children}</Link>;
               },
             }}
           >

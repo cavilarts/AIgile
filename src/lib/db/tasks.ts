@@ -100,7 +100,7 @@ export async function patchTask(id: string, data: Partial<TaskDB>) {
     const sanitizedResult = {
       ...data,
       ...(data.columnId && { columnId: new ObjectId(data.columnId) }),
-      ...(data.projectId && { boardId: new ObjectId(data.projectId) })
+      ...(data.projectId && { boardId: new ObjectId(data.projectId) }),
     };
 
     const result = await task.updateOne(
@@ -108,7 +108,7 @@ export async function patchTask(id: string, data: Partial<TaskDB>) {
       { $set: { ...sanitizedResult } }
     );
 
-    console.log('result', result);
+    console.log("result", result);
 
     return result;
   } catch (e) {
@@ -134,7 +134,9 @@ export async function getTasksByColumnId(columnId: string): Promise<TaskApi[]> {
   try {
     if (!task) await init();
 
-    const result = await task.find({ columnId: new ObjectId(columnId) }).toArray();
+    const result = await task
+      .find({ columnId: new ObjectId(columnId) })
+      .toArray();
 
     return result;
   } catch (e) {
@@ -143,15 +145,16 @@ export async function getTasksByColumnId(columnId: string): Promise<TaskApi[]> {
   }
 }
 
-export async function getTasksQuery(query: Partial<TaskDB>): Promise<TaskApi[]> {
+export async function getTasksQuery(
+  query: Partial<TaskDB>
+): Promise<TaskApi[]> {
   try {
     if (!task) await init();
     const sanitizedQuery = {
       ...query,
       ...(query.columnId && { columnId: new ObjectId(query.columnId) }),
-      ...(query.projectId && { projectId: new ObjectId(query.projectId) })
+      ...(query.projectId && { projectId: new ObjectId(query.projectId) }),
     };
-
 
     const result = await task.find(sanitizedQuery).toArray();
 

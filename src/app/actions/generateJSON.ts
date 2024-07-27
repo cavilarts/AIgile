@@ -1,12 +1,13 @@
-'use server'
+"use server";
 
 import { extractJSONfromString } from "@/lib";
 import { google } from "@ai-sdk/google";
-import { CoreMessage, generateText  } from "ai";
+import { CoreMessage, generateText } from "ai";
 import { submitProject } from "./submitProject";
 import { ProjectGenerated } from "@/types";
 
-const DEFAULT_ERROR_MESSAGE = "An error occurred while generating the visual output data.";
+const DEFAULT_ERROR_MESSAGE =
+  "An error occurred while generating the visual output data.";
 
 export async function generateJSON(messages: CoreMessage[]) {
   try {
@@ -34,19 +35,35 @@ export async function generateJSON(messages: CoreMessage[]) {
       `,
       messages,
     });
-    console.log("text generated:", text);
 
-    const extractedJSON = extractJSONfromString(text);
-    if(!extractedJSON) throw new Error("No JSON found in the generated text");
-    // Parse the JSON to ensure it's valid
-    const parsedJSON = JSON.parse(extractedJSON) as ProjectGenerated;
-    console.log("JSON to be stored:", parsedJSON);
+    try {
+      const parsedJSON = JSON.parse(text) as ProjectGenerated;
 
-    const response = submitProject(parsedJSON);
-    console.log("Response from submitProject:", response);
+      return {
+        success: true,
+        message: "Visual output data generated and ready for use!",
+        response: JSON.stringify(parsedJSON),
+      };
+    } catch (error) {
+      throw new Error("The generated JSON is not valid");
+    }
+    // let extractedJSON;
+    // let parsedJSON;
 
-    return { success: true, message: "Visual output data generated and ready for use!" };
+    // if (typeof text === "string") {
+    //   extractedJSON = extractJSONfromString(text);
+    //   if (!extractedJSON)
+    //     throw new Error("No JSON found in the generated text");
+    //   // Parse the JSON to ensure it's valid
+    //   parsedJSON = JSON.parse(extractedJSON) as ProjectGenerated;
+    // }
 
+    // if (typeof text === "object") {
+    //   extractedJSON = JSON.stringify(text);
+    // }
+
+    // const response = await submitProject(parsedJSON);
+    // console.log("Response from submitProject:", response);
   } catch (error) {
     console.error("Error generating JSON:", error);
 
