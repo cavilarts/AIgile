@@ -21,6 +21,7 @@ export type ColumnProps = {
 };
 
 export const Column: React.FC<ColumnProps> = ({
+  className,
   column,
   tasks,
   onTaskEdit,
@@ -48,7 +49,8 @@ export const Column: React.FC<ColumnProps> = ({
       ref={dropRef}
       className={classNames(
         "width-250 margin-0-8 transition-background-color-0.2s bg-opacity-60",
-        isHovering && "bg-secondary bg-opacity-70"
+        isHovering && "bg-secondary bg-opacity-70",
+        className
       )}
     >
       <CardHeader>

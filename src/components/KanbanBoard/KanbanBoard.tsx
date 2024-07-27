@@ -44,6 +44,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
             return (
               <Column
+                className="flex-1"
                 key={String(column._id)}
                 column={column}
                 index={index}
