@@ -1,7 +1,7 @@
-import { AddEditTaskForm, onTaskCreateParams } from "./AddEditTaskForm";
-import { ColumnApi } from "@/types";
-import { TaskApi, TaskId } from "@/types";
+import { DashboardLayout} from "@/layouts";
+import { ColumnApi, TaskApi, TaskId } from "@/types";
 import { Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
+import { AddEditTaskForm, onTaskCreateParams } from "./AddEditTaskForm";
 import { Column } from "./Column";
 
 export type KanbanBoardProps = {
@@ -29,7 +29,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onColumnEdit,
 }) => {
   return (
-    <div>
+    <DashboardLayout>
       <Navbar>
         <NavbarContent justify="end">
           <NavbarItem>
@@ -56,6 +56,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           })}
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
