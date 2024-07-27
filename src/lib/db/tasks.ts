@@ -134,11 +134,30 @@ export async function getTasksByColumnId(columnId: string): Promise<TaskApi[]> {
   try {
     if (!task) await init();
 
-    const result = await task.find({ columnId }).toArray();
+    const result = await task.find({ columnId: new ObjectId(columnId) }).toArray();
 
     return result;
   } catch (e) {
     console.error("getTasksByColumnId error", e);
+    return [];
+  }
+}
+
+export async function getTasksQuery(query: Partial<TaskDB>): Promise<TaskApi[]> {
+  try {
+    if (!task) await init();
+    const sanitizedQuery = {
+      ...query,
+      ...(query.columnId && { columnId: new ObjectId(query.columnId) }),
+      ...(query.projectId && { projectId: new ObjectId(query.projectId) })
+    };
+
+
+    const result = await task.find(sanitizedQuery).toArray();
+
+    return result;
+  } catch (e) {
+    console.error("getTasksQuery error", e);
     return [];
   }
 }

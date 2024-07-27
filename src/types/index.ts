@@ -17,7 +17,6 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 
 export * from "./board.types";
 export * from "./ai.types";
-export * from "./column.types";
 export * from "./project.types";
 export * from "./task.types";
 export * from "./util.types"

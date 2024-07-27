@@ -2,6 +2,7 @@ import {
   getColumnsByProjectId,
   getProjectBySlug,
   getTasksByColumnId,
+  getTasksQuery,
 } from "@/lib/db";
 import { NextRequest } from "next/server";
 
@@ -28,7 +29,10 @@ export async function GET(req: NextRequest) {
 
     const columnsWithTasks = await Promise.all(
       columns.map(async (column) => {
-        const tasks = await getTasksByColumnId(String(column._id));
+        const tasks = await getTasksQuery({
+          columnId: String(column._id),
+          projectId: String(project._id),
+        });
 
         return { ...column, tasks };
       })
