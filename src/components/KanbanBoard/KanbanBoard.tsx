@@ -1,20 +1,21 @@
-import { Column } from "./Column";
-import { AddEditTaskForm } from "./AddEditTaskForm";
-import { ColumnStatus, Task, TaskId } from "@/types";
+import { AddEditTaskForm, onTaskCreateParams } from "./AddEditTaskForm";
+import { ColumnApi } from "@/types";
+import { TaskApi, TaskId } from "@/types";
 import { Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
+import { Column } from "./Column";
 
 export type KanbanBoardProps = {
-  columns: ColumnStatus[];
+  columns: ColumnApi[];
   onTaskMove: (
     taskId: TaskId,
     sourceColumn: string,
     targetColumn: string
   ) => void;
-  onTaskEdit: (taskId: TaskId, updatedTask: Partial<Task>) => void;
+  onTaskEdit: (taskId: TaskId, updatedTask: Partial<TaskApi>) => void;
   // TODO: Implement the onTaskCreate function and the create modal
-  onTaskCreate: (task: Omit<Task, "id" | "createdAt" | "projectId">) => void;
+  onTaskCreate: (task: onTaskCreateParams) => void;
   // TODO: Implement the onColumnCreate function and the create modal
-  onColumnCreate: (column: Omit<ColumnStatus, "id" | "tasks">) => void;
+  onColumnCreate: (column: Omit<ColumnApi, "id" | "tasks">) => void;
   // TODO: Implement the onColumnEdit function and the edit modal
   onColumnEdit: (newOrder: string[]) => void;
 };
@@ -43,7 +44,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
             return (
               <Column
-                key={String(column.id)}
+                key={String(column._id)}
                 column={column}
                 index={index}
                 tasks={column.tasks}

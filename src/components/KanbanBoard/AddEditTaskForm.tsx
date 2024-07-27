@@ -1,21 +1,20 @@
+import { ColumnApi, TaskApi } from "@/types";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  Modal,
   Button,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Select,
   SelectItem,
-  ModalHeader,
-  ModalFooter,
   useDisclosure,
-  ModalContent,
-  ModalBody,
 } from "@nextui-org/react";
 import dynamic from "next/dynamic";
 import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-
-import { ColumnStatus, Task } from "@/types";
 
 const ReactQuill = dynamic(() => import("react-quill"), {
   ssr: false,
@@ -23,24 +22,30 @@ const ReactQuill = dynamic(() => import("react-quill"), {
 
 import "react-quill/dist/quill.snow.css";
 
-type onTaskCreateParams = Omit<Task, "id" | "createdAt" | "projectId">;
+export type onTaskCreateParams = Omit<
+  TaskApi,
+  "_id" | "createdAt" | "projectId" | "createdBy"
+>;
 
 type AddTaskFormProps = {
   onTaskCreate: (task: onTaskCreateParams) => void;
-  columns: ColumnStatus[];
+  columns: ColumnApi[];
   mode?: "add" | "edit";
-}
+};
 
 const schema = yup.object().shape({
   title: yup.string().required("Title is required"),
-  status: yup.string().when('$mode', {
-    is: 'edit',
+  status: yup.string().when("$mode", {
+    is: "edit",
     then: (schema) => schema.required("Status is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
   assignee: yup.string(),
   description: yup.string(),
-  priority: yup.string().oneOf(["low", "medium", "high"]).required("Priority is required"),
+  priority: yup
+    .string()
+    .oneOf(["low", "medium", "high"])
+    .required("Priority is required"),
 });
 
 type FormData = yup.InferType<typeof schema>;
@@ -51,7 +56,12 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
   mode,
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { control, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: yupResolver(schema),
     context: { mode },
     defaultValues: {
@@ -65,8 +75,13 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
 
   const onSubmit = (data: FormData) => {
     const mappedData: onTaskCreateParams = {
-      ...data,
-      columnId: mode === 'edit' && data.status ? data.status : columns[0].id,
+      // TODO: Fix column for edit
+      columnId: mode === "edit" && data.status ? data.status : columns[0]._id,
+      boardId: columns[0].boardId,
+      priority: data.priority as "low" | "medium" | "high",
+      title: data.title,
+      description: data.description ?? "",
+      tags: [],
     };
     onTaskCreate(mappedData);
     onOpenChange();
@@ -109,7 +124,8 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
                         isInvalid={Boolean(errors.title)}
                         errorMessage={errors.title?.message}
                       />
-                    )} />
+                    )}
+                  />
                   <div />
                   <div className="mb-4">
                     <label className="block mb-2">Description</label>
@@ -120,16 +136,20 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
                         <ReactQuill
                           theme="snow"
                           {...field}
-                          style={{ height: '200px' }}
+                          style={{ height: "200px" }}
                         />
                       )}
                     />
-                    {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
+                    {errors.description && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.description.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className="w-full md:w-1/3">
-                  {mode === 'edit' && (
+                  {mode === "edit" && (
                     <Controller
                       name="status"
                       control={control}
@@ -142,8 +162,11 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
                           className="mb-4"
                         >
                           {columns.map((column) => (
-                            <SelectItem key={column.id} value={column.id}>
-                              {column.title}
+                            <SelectItem
+                              key={String(column._id)}
+                              value={String(column._id)}
+                            >
+                              {column.name}
                             </SelectItem>
                           ))}
                         </Select>
@@ -175,9 +198,15 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
                         label="Priority"
                         errorMessage={errors.priority?.message}
                       >
-                        <SelectItem key="low" value="low">Low</SelectItem>
-                        <SelectItem key="medium" value="medium">Medium</SelectItem>
-                        <SelectItem key="high" value="high">High</SelectItem>
+                        <SelectItem key="low" value="low">
+                          Low
+                        </SelectItem>
+                        <SelectItem key="medium" value="medium">
+                          Medium
+                        </SelectItem>
+                        <SelectItem key="high" value="high">
+                          High
+                        </SelectItem>
                       </Select>
                     )}
                   />
@@ -185,7 +214,11 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="light" onPress={() => onOpenChange()}>
+              <Button
+                color="danger"
+                variant="light"
+                onPress={() => onOpenChange()}
+              >
                 Cancel
               </Button>
               <Button color="primary" type="submit">

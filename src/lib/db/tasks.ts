@@ -1,9 +1,9 @@
 import { Db, Collection, OptionalId, ObjectId } from "mongodb";
 import clientPromise from "./mongoConnection";
-import { Task } from "@/types";
+import { TaskApi, TaskDB } from "@/types";
 
 let db: Db;
-let task: Collection<Task>;
+let task: Collection<TaskDB>;
 let client;
 
 async function init() {
@@ -22,7 +22,7 @@ async function init() {
   await init();
 })();
 
-export async function createTask(data: OptionalId<Task>) {
+export async function createTask(data: TaskDB) {
   try {
     if (!task) await init();
 
@@ -35,7 +35,7 @@ export async function createTask(data: OptionalId<Task>) {
   }
 }
 
-export async function createTasks(data: OptionalId<Task>[]) {
+export async function createTasks(data: TaskDB[]) {
   try {
     if (!data) await init();
 
@@ -74,7 +74,10 @@ export async function getTasks(boardId: string) {
   }
 }
 
-export async function updateTask(id: string, data: Task) {
+export async function updateTask(
+  id: string,
+  data: Omit<TaskDB, "projectId" | "boardId">
+) {
   try {
     if (!task) await init();
 
@@ -90,7 +93,7 @@ export async function updateTask(id: string, data: Task) {
   }
 }
 
-export async function patchTask(id: string, data: Partial<Task>) {
+export async function patchTask(id: string, data: Partial<TaskDB>) {
   try {
     if (!task) await init();
     // Remap data if it contains an _id
@@ -127,7 +130,7 @@ export async function deleteTask(id: string) {
   }
 }
 
-export async function getTasksByColumnId(columnId: ObjectId) {
+export async function getTasksByColumnId(columnId: string): Promise<TaskApi[]> {
   try {
     if (!task) await init();
 

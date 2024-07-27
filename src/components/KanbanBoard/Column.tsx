@@ -1,20 +1,18 @@
 "use client";
 
-import { Children, useRef, useState } from "react";
-import { useDrop } from "ahooks";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
+import { useDrop } from "ahooks";
 import classNames from "classnames";
-
+import { Children, useRef, useState } from "react";
 import { TaskCard } from "./TaskCard";
-
-import { ColumnStatus, Task, TaskId } from "@/types";
+import { ColumnApi, TaskApi, TaskId } from "@/types";
 
 export type ColumnProps = {
   className?: string;
-  column: ColumnStatus;
-  tasks: Task[];
+  column: ColumnApi;
+  tasks: TaskApi[];
   index: number;
-  onTaskEdit: (taskId: TaskId, updatedTask: Partial<Task>) => void;
+  onTaskEdit: (taskId: TaskId, updatedTask: Partial<TaskApi>) => void;
   onTaskMove: (
     taskId: TaskId,
     sourceColumn: string,
@@ -36,8 +34,8 @@ export const Column: React.FC<ColumnProps> = ({
       const taskId = e?.dataTransfer?.getData("taskId");
       const sourceColumnId = e?.dataTransfer?.getData("sourceColumnId");
 
-      if (sourceColumnId && taskId && sourceColumnId !== column.id) {
-        onTaskMove(taskId, sourceColumnId, column.id);
+      if (sourceColumnId && taskId && sourceColumnId !== column._id) {
+        onTaskMove(taskId, sourceColumnId, String(column._id));
       }
       setIsHovering(false);
     },
@@ -54,18 +52,19 @@ export const Column: React.FC<ColumnProps> = ({
       )}
     >
       <CardHeader>
-        <h4 className="font-bold text-large">{column?.title}</h4>
+        <h4 className="font-bold text-large">{column.name}</h4>
       </CardHeader>
 
       <CardBody className="min-height-500 space-y-4">
         {Children.toArray(
-tasks.map((task) => (
-          <TaskCard
-            columnId={String(column.id)}
-            task={task}
-            onEdit={onTaskEdit}
-          />
-        ))
+          tasks.map((task) => (
+            <TaskCard
+              key={String(task._id)}
+              columnId={String(column._id)}
+              task={task}
+              onEdit={onTaskEdit}
+            />
+          ))
         )}
       </CardBody>
     </Card>

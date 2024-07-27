@@ -7,11 +7,12 @@ export type Task<T = ObjectId | string> = {
   title: string;
   description?: string;
   priority: "low" | "medium" | "high";
-  // tags: string[];
+  tags: string[];
   projectId: T;
   createdAt: Date;
   assignee?: string;
   subtasks?: T[];
   status?: T;
   columnId: T;
+  boardId?: T;
 };

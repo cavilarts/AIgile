@@ -17,7 +17,8 @@ export async function GET(req: NextRequest) {
 
   try {
     const project = await getProjectBySlug(slug);
-    const columns = await getColumnsByProjectId(project._id);
+    if (!project) throw new Error("Project not found");
+    const columns = await getColumnsByProjectId(String(project._id));
 
     console.log('columns', columns);
 
@@ -27,7 +28,7 @@ export async function GET(req: NextRequest) {
 
     const columnsWithTasks = await Promise.all(
       columns.map(async (column) => {
-        const tasks = await getTasksByColumnId(column._id);
+        const tasks = await getTasksByColumnId(String(column._id));
 
         return { ...column, tasks };
       })

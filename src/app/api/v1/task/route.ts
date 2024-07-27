@@ -1,10 +1,4 @@
-import {
-  createTask,
-  createTasks,
-  deleteTask,
-  getTask,
-  updateTask,
-} from "@/lib/db/taks";
+import { createTask, deleteTask, getTask, updateTask } from "@/lib/db/tasks";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -34,8 +28,16 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { title, description, priority, tags, projectId, boardId, columnId } =
-    await requestBody;
+  const {
+    title,
+    description,
+    priority,
+    tags,
+    projectId,
+    boardId,
+    columnId,
+    createdBy,
+  } = await requestBody;
 
   if (
     !title ||
@@ -62,6 +64,7 @@ export async function POST(req: NextRequest) {
       boardId,
       columnId,
       createdAt: new Date(),
+      createdBy,
     });
 
     return Response.json(result);
@@ -78,7 +81,7 @@ export async function PUT(req: NextRequest) {
     return Response.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { id, title, description, priority, tags, status, assignee } =
+  const { id, title, description, priority, tags, status, assignee, columnId } =
     await requestBody;
 
   if (!id) {
@@ -94,9 +97,10 @@ export async function PUT(req: NextRequest) {
       description,
       priority,
       tags,
-      status,
       assignee,
       createdAt: new Date(),
+      columnId,
+      createdBy: "",
     });
 
     return Response.json(result);

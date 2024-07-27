@@ -1,9 +1,9 @@
-import { Db, Collection, ObjectId } from "mongodb";
+import { BoardDB } from "@/types";
+import { Collection, Db, ObjectId } from "mongodb";
 import clientPromise from "./mongoConnection";
-import { Board, Optional } from "@/types";
 
 let db: Db;
-let boards: Collection<Board>;
+let boards: Collection<Partial<BoardDB>>;
 let client;
 
 async function init() {
@@ -33,13 +33,19 @@ export async function getBoard(id: string) {
     };
   } catch (e) {
     console.error("getBoards error", e);
-    return [];
+    return {
+      data: null,
+    };
   }
 }
 
-export async function createBoard(data: Optional<Board, 'columns' | 'tasks' >) {
+export async function createBoard(data: Partial<BoardDB>) {
   try {
     if (!boards) await init();
+
+    if (!data.name) {
+      throw new Error("Board name is required");
+    }
 
     const result = await boards.insertOne({
       ...data,
@@ -54,16 +60,18 @@ export async function createBoard(data: Optional<Board, 'columns' | 'tasks' >) {
   }
 }
 
-export async function patchBoard(id: string, data: Partial<Board>) {
+export async function patchBoard(id: string, data: Partial<BoardDB>) {
   try {
     if (!boards) await init();
 
     const result = await boards.updateOne(
       { _id: new ObjectId(id) },
-      { $set: {
-        ...data,
-        lastModifiedAt: new Date(),
-      } }
+      {
+        $set: {
+          ...data,
+          lastModifiedAt: new Date(),
+        },
+      }
     );
 
     return result;

@@ -1,19 +1,19 @@
 "use client";
 
-import useSWR, { useSWRConfig } from "swr";
 import { KanbanBoard } from "@/components/KanbanBoard";
-import { Column, ColumnStatus, TaskId } from "@/types";
+import { onTaskCreateParams } from "@/components/KanbanBoard/AddEditTaskForm";
+import { ColumnApi, TaskApi, TaskId } from "@/types";
 import { useSession } from "next-auth/react";
-import { Collection } from "mongodb";
-import { getBoard, updateTaskInBoard, Task } from "./api";
+import useSWR from "swr";
+import { getBoard, updateTaskInBoard } from "./api";
 import { cloneDeep } from "lodash";
 
 export default function ProjectPage({ params }: { params: { board: string } }) {
   const { board } = params;
-  const { data, isLoading, mutate } = useSWR(`/api/v1/project/${board}`, getBoard);
-  const { status, data: sessionData } = useSession();
-  
-  console.log('data', data);
+  const { data, isLoading, mutate, error } = useSWR(`/api/v1/project/${board}`, getBoard);
+  const { status } = useSession();
+
+  console.log(data?.columns);
 
   return (
     <>
@@ -21,12 +21,13 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
       {status === "authenticated" && data && (
         <KanbanBoard
           columns={data.columns.map((column) => ({
-            id: column._id,
+            ...column,
+            _id: column._id,
             title: column.name,
             tasks: column.tasks,
           }))}
           onColumnCreate={function (
-            column: Omit<ColumnStatus, "id" | "tasks">
+            column: Omit<ColumnApi, "id" | "tasks">
           ): void {
             // TODO: implement here the call to the API to create a new column
             console.error("Function not implemented.");
@@ -35,13 +36,13 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
             // TODO: implement here the call to the API to update the column
             console.error("Function not implemented.");
           }}
-          onTaskCreate={function (task: Omit<Task, "id" | "createdAt">): void {
+          onTaskCreate={function (task: onTaskCreateParams): void {
             // TODO: implement here the call to the API to create a new task, but first we need to create the create modal
-            console.error("Function not implemented.");
+            return console.error("Function not implemented.");
           }}
           onTaskEdit={function (
             taskId: TaskId,
-            updatedTask: Partial<Task>
+            updatedTask: Partial<TaskApi>
           ): void {
             // TODO: implement here the call to the API to update the task, but first we need to create the edit modal
             console.error("Function not implemented.");
@@ -52,11 +53,11 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
             targetColumn: string
           ): void {
             const optimisticData = cloneDeep(data);
-            let extractedTask: Task;
+            let extractedTask: TaskApi;
 
             optimisticData.columns = optimisticData.columns.map((column) => {
               if (column._id == sourceColumn) {
-                const columnWithoutMovedTask = column.tasks.filter((task: Task) => {
+                const columnWithoutMovedTask = column.tasks.filter((task: TaskApi) => {
                   if (task._id == taskId) {
                     extractedTask = task;
                   }

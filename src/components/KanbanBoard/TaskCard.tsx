@@ -3,13 +3,12 @@
 import { useRef } from "react";
 import { useDrag } from "ahooks";
 import { Card, CardBody, ChipProps, CardHeader, Chip } from "@nextui-org/react";
-
-import { Task, TaskId } from "@/types";
+import { TaskApi, TaskId } from "@/types";
 import { capitalize } from "@/lib";
 
 export type TaskCardProps = {
-  task: Task | undefined;
-  onEdit: (taskId: TaskId, updatedTask: Partial<Task>) => void;
+  task: TaskApi;
+  onEdit: (taskId: TaskId, updatedTask: Partial<TaskApi>) => void;
   columnId: string;
 };
 
@@ -34,21 +33,25 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       ref={dragRef}
       className="margin-bottom-8 transition-opacity-0.2s cursor-move"
     >
-      <CardHeader className="relative overflow-visible">
-        <div className="w-full">
-          <Chip
-            className="float-right ml-2 mb-1"
-            color={getPriorityColor(task.priority)}
-            size="sm"
-          >
-            {capitalize(task.priority)}
-          </Chip>
-          <h5 className="font-bold text-large">{task.title}</h5>
-        </div>
-      </CardHeader>
+      {task?.priority && (
+        <CardHeader className="relative overflow-visible">
+          <div className="w-full">
+            <Chip
+              className="float-right ml-2 mb-1"
+              color={getPriorityColor(task.priority)}
+              size="sm"
+            >
+              {capitalize(task.priority)}
+            </Chip>
+            <h5 className="font-bold text-large">{task.title}</h5>
+          </div>
+        </CardHeader>
+      )}
+
       <CardBody className="text-sm">
         <p>{task.description}</p>
-        {task.assignee && <span>Assignee: {task.assignee}</span>}
+        {/* TODO: bring by user name */}
+        {task?.assignee && <span>Assignee: {String(task.assignee)}</span>}
       </CardBody>
     </Card>
   );

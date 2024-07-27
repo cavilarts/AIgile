@@ -3,11 +3,10 @@ import { createBoard, patchBoard } from "../../lib/db/board";
 import { createProject, getProject, patchProject } from "../../lib/db/project";
 import { createTasks, createColumns, getSessionUser } from "../../lib/db";
 import { ObjectId } from "mongodb";
+import { Status } from "@/constants/status";
 
 export const submitProject = async (project: ProjectGenerated) => {
-
-  
-  const { boardName, projectDescription, boardDescription,  tasks } = project;
+  const { boardName, projectDescription, boardDescription, tasks } = project;
 
   try {
     const user = await getSessionUser();
@@ -20,40 +19,41 @@ export const submitProject = async (project: ProjectGenerated) => {
       slug,
     });
     const projectId = "insertedId" in project ? project.insertedId : undefined;
-    if(projectId === undefined) throw new Error("Project ID is undefined");
+    if (projectId === undefined) throw new Error("Project ID is undefined");
 
     const savedBoard = await createBoard({
       name: boardName,
-      projectId,
+      projectId: projectId,
       // TODO: Update companyId and createdBy with actual values when authentication is implemented
       description: boardDescription,
-      companyId: "",
       createdBy: user.data._id,
     });
-    const boardId = "insertedId" in savedBoard ? String(savedBoard.insertedId) : undefined;
-    if(boardId === undefined) throw new Error("Board ID is undefined");
+    const boardId =
+      "insertedId" in savedBoard ? String(savedBoard.insertedId) : undefined;
+    if (boardId === undefined) throw new Error("Board ID is undefined");
 
     const savedColumns = await createColumns([
       {
         name: "To Do",
-        boardId,
+        boardId: new ObjectId(boardId),
         projectId,
       },
       {
         name: "In Progress",
-        boardId,
+        boardId: new ObjectId(boardId),
         projectId,
       },
       {
         name: "Done",
-        boardId,
-        projectId
+        boardId: new ObjectId(boardId),
+        projectId,
       },
     ]);
-    const columnIds = "insertedIds" in savedColumns ? savedColumns.insertedIds : undefined;
-    if(columnIds === undefined) throw new Error("Column IDs are undefined");
+    const columnIds =
+      "insertedIds" in savedColumns ? savedColumns.insertedIds : undefined;
+    if (columnIds === undefined) throw new Error("Column IDs are undefined");
     const columnId = "insertedIds" in savedColumns ? columnIds[0] : undefined;
-    if(columnId === undefined) throw new Error("Column ID is undefined");
+    if (columnId === undefined) throw new Error("Column ID is undefined");
 
     console.log("savedColumns", savedColumns);
 
@@ -65,10 +65,12 @@ export const submitProject = async (project: ProjectGenerated) => {
         columnId,
         createdAt: new Date(),
         createdBy: user.data._id,
+        status: Status.TODO,
       })),
     ]);
-    const taskIds = "insertedIds" in savedTasks ? savedTasks.insertedIds : undefined;
-    if(taskIds === undefined) throw new Error("Task IDs are undefined");
+    const taskIds =
+      "insertedIds" in savedTasks ? savedTasks.insertedIds : undefined;
+    if (taskIds === undefined) throw new Error("Task IDs are undefined");
 
     const listOfTasks = [] as ObjectId[];
     const listOfColumns = [];
@@ -78,18 +80,18 @@ export const submitProject = async (project: ProjectGenerated) => {
     }
 
     for (const b in columnIds) {
-      listOfColumns.push(columnIds[b]);
+      listOfColumns.push(new ObjectId(columnIds[b]));
     }
 
     await patchBoard(boardId, {
-      projectId,
+      projectId: new ObjectId(projectId),
       columns: listOfColumns,
       tasks: listOfTasks,
       name: boardName,
       // TODO: Update companyId and createdBy with actual values when authentication is implemented
     });
 
-    await patchProject(projectId, {
+    await patchProject(new ObjectId(projectId).toString(), {
       boardName: boardId,
       tasks: listOfTasks,
       // TODO: Update these properties with actual values when authentication is implemented

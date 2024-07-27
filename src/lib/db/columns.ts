@@ -1,10 +1,9 @@
-import { Db, Collection, OptionalId, ObjectId } from "mongodb";
+import { Db, Collection, OptionalId, ObjectId, WithId } from "mongodb";
 import clientPromise from "./mongoConnection";
-import { Column } from "@/types/column.types";
-import { Board, Optional } from "@/types";
+import { ColumnDB, Optional } from "@/types";
 
 let db: Db;
-let column: Collection<Optional<Column, "description" | "companyId" | "tasks">>;
+let column: Collection<Optional<ColumnDB, "tasks">>;
 let client;
 
 async function init() {
@@ -23,13 +22,16 @@ async function init() {
   await init();
 })();
 
-export async function getColumnsByProjectId(projectId: string) {
+export async function getColumnsByProjectId(
+  projectId: string
+): Promise<WithId<Optional<ColumnDB,"tasks">>[]> {
   if (!column) await init();
 
   try {
     if (!column) await init();
 
-    const result = await column.find({ projectId }).toArray();
+    const id = new ObjectId(projectId);
+    const result = await column.find({ projectId: id }).toArray();
 
     return result;
   } catch (e) {
@@ -38,7 +40,7 @@ export async function getColumnsByProjectId(projectId: string) {
   }
 }
 
-export async function createColumn(data: OptionalId<Column>) {
+export async function createColumn(data: OptionalId<ColumnDB>) {
   try {
     if (!column) await init();
 
@@ -54,7 +56,7 @@ export async function createColumn(data: OptionalId<Column>) {
 }
 
 export async function createColumns(
-  data: OptionalId<Optional<Column, "description" | "companyId" | "tasks">>[]
+  data: OptionalId<Optional<ColumnDB, "tasks">>[]
 ) {
   try {
     if (!column) await init();
@@ -85,7 +87,7 @@ export async function getColumns(boardId: string) {
   try {
     if (!column) await init();
 
-    const result = await column.find({ boardId }).toArray();
+    const result = await column.find({ boardId: new ObjectId(boardId) }).toArray();
 
     return result;
   } catch (e) {
