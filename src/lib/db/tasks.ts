@@ -117,8 +117,6 @@ export async function patchTask(id: string, data: Partial<TaskDB>) {
       { $set: { ...sanitizedResult } }
     );
 
-    console.log("result", result);
-
     return result;
   } catch (e) {
     console.error("patchTask error", e);

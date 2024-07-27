@@ -8,10 +8,28 @@ import {
   Button,
   Link,
 } from "@nextui-org/react";
+import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
+import useSWR from "swr";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: userData, status } = useSession();
+  const email = userData?.user?.email;
+  const fetcher = (url: string, email: string) =>
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    }).then((res) => res.json());
+
+  const { data: project } = useSWR("/api/v1/users-project", {
+    fetcher: (url: string) => fetcher(url, email ?? ""),
+  });
+
+  console.log(project);
 
   return (
     <Navbar
@@ -22,6 +40,18 @@ export default function Header() {
       <NavbarContent>
         <NavbarBrand>AIgile</NavbarBrand>
         <NavbarContent className="hidden sm:flex gap-4" justify="end">
+          <>
+            {project && project.slug ? (
+              <NavbarItem>
+                <Link
+                  className="text-sky-400"
+                  href={`/projects/${project.slug}`}
+                >
+                  My Project
+                </Link>
+              </NavbarItem>
+            ) : null}
+          </>
           <NavbarItem>
             <Link className="text-sky-400" href="/about">
               About
@@ -38,17 +68,29 @@ export default function Header() {
             </Link>
           </NavbarItem>
           <NavbarItem>
-            <Button as={Link} href="/sign-up" variant="flat">
-              Sign Up
-            </Button>
+            {status !== "authenticated" ? (
+              <Button as={Link} href="/sign-in" variant="flat">
+                Sign In
+              </Button>
+            ) : (
+              <Button variant="flat" onClick={() => signOut()}>
+                Sign Out
+              </Button>
+            )}
           </NavbarItem>
         </NavbarContent>
       </NavbarContent>
       <NavbarContent className="sm:hidden" justify="end">
         <NavbarItem>
-          <Button as={Link} href="/sign-up" variant="flat">
-            Sign Up
-          </Button>
+          {status !== "authenticated" ? (
+            <Button as={Link} href="/sign-in" variant="flat">
+              Sign In
+            </Button>
+          ) : (
+            <Button variant="flat" onClick={() => signOut()}>
+              Sign Out
+            </Button>
+          )}
         </NavbarItem>
         <NavbarItem>
           <NavbarMenuToggle

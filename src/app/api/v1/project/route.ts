@@ -28,14 +28,10 @@ export async function POST(req: NextRequest) {
 
     if (projectId === undefined) throw new Error("Project ID is undefined");
 
-    console.log("savedBoard", projectId);
-
     const savedBoard = await createBoard({
       name: boardName,
       projectId,
     });
-
-    console.log("savedBoard", savedBoard.insertedId);
 
     const savedColumns = await createColumns([
       {
@@ -55,8 +51,6 @@ export async function POST(req: NextRequest) {
       },
     ]);
 
-    console.log("savedColumns", savedColumns);
-
     const savedTasks = await createTasks([
       ...tasks.map((taskToSave) => ({
         ...taskToSave,
@@ -70,7 +64,6 @@ export async function POST(req: NextRequest) {
     const listOfColumns = [];
 
     for (const a in savedTasks.insertedIds) {
-      console.log("task", a);
       listOfTasks.push(savedTasks.insertedIds[a]);
     }
 
@@ -115,8 +108,6 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    console.log("getProject", id);
-
     const project = await getProject(id);
 
     if (!project) {

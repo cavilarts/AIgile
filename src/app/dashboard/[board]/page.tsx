@@ -1,12 +1,17 @@
 "use client";
 
 import { KanbanBoard } from "@/components/KanbanBoard";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 import { onTaskCreateParams } from "@/components/KanbanBoard/AddEditTaskForm";
 import { ColumnApi, TaskApi, TaskId } from "@/types";
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
-import { createTaskInBoard, deleteTaskInBoard, getBoard, updateTaskInBoard } from "./api";
+import {
+  createTaskInBoard,
+  deleteTaskInBoard,
+  getBoard,
+  updateTaskInBoard,
+} from "./api";
 import { cloneDeep } from "lodash";
 const Custom404 = lazy(() => import("@/components/ErrorStatus/Custom404"));
 const Custom500 = lazy(() => import("@/components/ErrorStatus/Custom500"));
@@ -14,35 +19,44 @@ import { lazy, Suspense } from "react";
 
 export default function ProjectPage({ params }: { params: { board: string } }) {
   const { board } = params;
-  const notifyDelete = () => toast("Task deleted successfully", { type: "success" });
-  const notifyCreate = () => toast("Task created successfully", { type: "success" });
+  const notifyDelete = () =>
+    toast("Task deleted successfully", { type: "success" });
+  const notifyCreate = () =>
+    toast("Task created successfully", { type: "success" });
   const notifyError = () => toast("An error occurred", { type: "error" });
-  const { data, isLoading, mutate, error } = useSWR(`/api/v1/project/${board}`, getBoard);
+  const { data, isLoading, mutate, error } = useSWR(
+    `/api/v1/project/${board}`,
+    getBoard
+  );
   const { status } = useSession();
 
   const onTaskDelete = function (taskId: TaskId): void {
     mutate((currentData) => deleteTaskInBoard(currentData, taskId), {
       rollbackOnError: false,
       populateCache: false,
-      revalidate: true
-    }).then(notifyDelete).catch((error) => {
-      console.error("Error deleting task:", error);
-      notifyError();
-    });
+      revalidate: true,
+    })
+      .then(notifyDelete)
+      .catch((error) => {
+        console.error("Error deleting task:", error);
+        notifyError();
+      });
   };
 
   const onTaskCreate = function (task: onTaskCreateParams): void {
     mutate((currentData) => createTaskInBoard(currentData, task), {
       rollbackOnError: false,
       populateCache: false,
-      revalidate: true
-    }).then(() => {
-      notifyCreate();
-    }).catch((error) => {
-      console.error("Error creating task:", error);
-      notifyError();
-    });
-  }
+      revalidate: true,
+    })
+      .then(() => {
+        notifyCreate();
+      })
+      .catch((error) => {
+        console.error("Error creating task:", error);
+        notifyError();
+      });
+  };
 
   return (
     <>
@@ -50,10 +64,12 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
       {status === "authenticated" && error && error?.status === 404 ? (
         <Suspense fallback={<div>Loading...</div>}>
           <Custom404 />
-        </Suspense >
-      ) : <Suspense fallback={<div>Loading...</div>}>
-        <Custom500 />
-      </Suspense >}
+        </Suspense>
+      ) : (
+        <Suspense fallback={<div>Loading...</div>}>
+          <Custom500 />
+        </Suspense>
+      )}
       {status === "authenticated" && data && (
         <KanbanBoard
           columns={data?.columns?.map((column) => ({
@@ -91,13 +107,15 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
 
             optimisticData.columns = optimisticData.columns.map((column) => {
               if (column._id == sourceColumn) {
-                const columnWithoutMovedTask = column.tasks.filter((task: TaskApi) => {
-                  if (task._id == taskId) {
-                    extractedTask = task;
-                  }
+                const columnWithoutMovedTask = column.tasks.filter(
+                  (task: TaskApi) => {
+                    if (task._id == taskId) {
+                      extractedTask = task;
+                    }
 
-                  return task._id !== taskId
-                });
+                    return task._id !== taskId;
+                  }
+                );
 
                 return { ...column, tasks: columnWithoutMovedTask };
               } else {
@@ -112,13 +130,20 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
               return column;
             });
 
-
-            mutate((currentData) => updateTaskInBoard(currentData, { taskId, sourceColumn, targetColumn }), {
-              optimisticData: optimisticData,
-              rollbackOnError: false,
-              populateCache: false,
-              revalidate: true
-            });
+            mutate(
+              (currentData) =>
+                updateTaskInBoard(currentData, {
+                  taskId,
+                  sourceColumn,
+                  targetColumn,
+                }),
+              {
+                optimisticData: optimisticData,
+                rollbackOnError: false,
+                populateCache: false,
+                revalidate: true,
+              }
+            );
           }}
         />
       )}

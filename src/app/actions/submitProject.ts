@@ -55,8 +55,6 @@ export const submitProject = async (project: ProjectGenerated) => {
     const columnId = "insertedIds" in savedColumns ? columnIds[0] : undefined;
     if (columnId === undefined) throw new Error("Column ID is undefined");
 
-    console.log("savedColumns", savedColumns);
-
     const savedTasks = await createTasks([
       ...tasks.map((taskToSave) => ({
         ...taskToSave,
