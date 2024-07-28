@@ -37,7 +37,10 @@ export async function generateJSON(messages: CoreMessage[]) {
     });
 
     try {
-      const parsedJSON = JSON.parse(text) as ProjectGenerated;
+      const extractedJSON = extractJSONfromString(text);
+      const parsedJSON = extractedJSON
+        ? (JSON.parse(extractedJSON) as ProjectGenerated)
+        : JSON.parse(text);
 
       return {
         success: true,
