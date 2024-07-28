@@ -58,9 +58,7 @@ export async function getProjectByUser(userId: ObjectId) {
   try {
     if (!project) await init();
 
-    const result = await project
-      .find({ userId: new ObjectId(userId) })
-      .toArray();
+    const result = await project.findOne({ createdBy: new ObjectId(userId) });
 
     return result;
   } catch (e) {

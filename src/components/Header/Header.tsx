@@ -25,11 +25,11 @@ export default function Header() {
       body: JSON.stringify({ email }),
     }).then((res) => res.json());
 
-  const { data: project } = useSWR("/api/v1/users-project", {
+  const { data } = useSWR("/api/v1/users-project", {
     fetcher: (url: string) => fetcher(url, email ?? ""),
   });
 
-  console.log(project);
+  console.log(data);
 
   return (
     <Navbar
@@ -41,11 +41,11 @@ export default function Header() {
         <NavbarBrand>AIgile</NavbarBrand>
         <NavbarContent className="hidden sm:flex gap-4" justify="end">
           <>
-            {project && project.slug ? (
+            {data?.project && data?.project?.slug ? (
               <NavbarItem>
                 <Link
                   className="text-sky-400"
-                  href={`/projects/${project.slug}`}
+                  href={`/dashboard/${data.project.slug}`}
                 >
                   My Project
                 </Link>
