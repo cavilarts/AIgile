@@ -1,4 +1,4 @@
-import { createTask, deleteTask, getTask, updateTask } from "@/lib/db/tasks";
+import { createTask, deleteTask, getTask, patchTask, updateTask } from "@/lib/db/tasks";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -109,6 +109,28 @@ export async function PUT(req: NextRequest) {
     return Response.json({ error: "An error occurred" }, { status: 500 });
   }
 }
+
+export async function PATCH(req: NextRequest) {
+  const id = req.nextUrl.searchParams.get("id");
+  const data = await req.json();
+
+  if (!id) {
+    return Response.json(
+      { error: "Please provide a task id" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const result = await patchTask(id, data);
+
+    return Response.json(result);
+  } catch (e) {
+    console.error("updateTask error", e);
+    return Response.json({ error: "An error occurred" }, { status: 500 });
+  }
+}
+
 
 export async function DELETE(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");

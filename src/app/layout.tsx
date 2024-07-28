@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../styles/globals.css";
-import { SessionProvider } from "next-auth/react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../lib/auth/auth";
 import Provider from "./context/client-provider";
+import 'react-toastify/dist/ReactToastify.min.css';
 
 const inter = Inter({ subsets: ["latin"] });
 

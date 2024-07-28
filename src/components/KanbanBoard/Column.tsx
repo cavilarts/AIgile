@@ -13,6 +13,7 @@ export type ColumnProps = {
   tasks: TaskApi[];
   index: number;
   onTaskEdit: (taskId: TaskId, updatedTask: Partial<TaskApi>) => void;
+  onTaskDelete: (taskId: TaskId) => void;
   onTaskMove: (
     taskId: TaskId,
     sourceColumn: string,
@@ -21,9 +22,11 @@ export type ColumnProps = {
 };
 
 export const Column: React.FC<ColumnProps> = ({
+  className,
   column,
   tasks,
   onTaskEdit,
+  onTaskDelete,
   onTaskMove,
 }) => {
   const dropRef = useRef(null);
@@ -48,7 +51,8 @@ export const Column: React.FC<ColumnProps> = ({
       ref={dropRef}
       className={classNames(
         "width-250 margin-0-8 transition-background-color-0.2s bg-opacity-60",
-        isHovering && "bg-secondary bg-opacity-70"
+        isHovering && "bg-secondary bg-opacity-70",
+        className
       )}
     >
       <CardHeader>
@@ -63,6 +67,7 @@ export const Column: React.FC<ColumnProps> = ({
               columnId={String(column._id)}
               task={task}
               onEdit={onTaskEdit}
+              onDelete={onTaskDelete}
             />
           ))
         )}

@@ -1,7 +1,7 @@
-import { AddEditTaskForm, onTaskCreateParams } from "./AddEditTaskForm";
-import { ColumnApi } from "@/types";
-import { TaskApi, TaskId } from "@/types";
+import { DashboardLayout} from "@/layouts";
+import { ColumnApi, TaskApi, TaskId } from "@/types";
 import { Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
+import { AddEditTaskForm, onTaskCreateParams } from "./AddEditTaskForm";
 import { Column } from "./Column";
 
 export type KanbanBoardProps = {
@@ -12,6 +12,7 @@ export type KanbanBoardProps = {
     targetColumn: string
   ) => void;
   onTaskEdit: (taskId: TaskId, updatedTask: Partial<TaskApi>) => void;
+  onTaskDelete: (taskId: TaskId) => void;
   // TODO: Implement the onTaskCreate function and the create modal
   onTaskCreate: (task: onTaskCreateParams) => void;
   // TODO: Implement the onColumnCreate function and the create modal
@@ -24,12 +25,13 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   columns,
   onTaskMove,
   onTaskEdit,
+  onTaskDelete,
   onTaskCreate,
   onColumnCreate,
   onColumnEdit,
 }) => {
   return (
-    <div>
+    <DashboardLayout>
       <Navbar>
         <NavbarContent justify="end">
           <NavbarItem>
@@ -44,17 +46,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
             return (
               <Column
+                className="flex-1"
                 key={String(column._id)}
                 column={column}
                 index={index}
                 tasks={column.tasks}
                 onTaskEdit={onTaskEdit}
                 onTaskMove={onTaskMove}
+                onTaskDelete={onTaskDelete}
               />
             );
           })}
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
