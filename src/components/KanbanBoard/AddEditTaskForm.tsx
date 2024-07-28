@@ -15,22 +15,29 @@ import {
 import dynamic from "next/dynamic";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import TurndownService from 'turndown';
 
 const ReactQuill = dynamic(() => import("react-quill"), {
   ssr: false,
 });
+const turndownService = new TurndownService();
 
 import "react-quill/dist/quill.snow.css";
 
 export type onTaskCreateParams = Omit<
   TaskApi,
-  "_id" | "createdAt" | "projectId" | "createdBy"
+  "_id" | "createdAt" | "createdBy"
 >;
 
+export enum TaskAction {
+  ADD = "add",
+  EDIT = "edit",
+}
+
 type AddTaskFormProps = {
-  onTaskCreate: (task: onTaskCreateParams) => void;
+  onSubmit: (task: onTaskCreateParams, mode: TaskAction) => void;
   columns: ColumnApi[];
-  mode?: "add" | "edit";
+  mode: TaskAction;
 };
 
 const schema = yup.object().shape({
@@ -42,6 +49,7 @@ const schema = yup.object().shape({
   }),
   assignee: yup.string(),
   description: yup.string(),
+  markdownDescription: yup.string(),
   priority: yup
     .string()
     .oneOf(["low", "medium", "high"])
@@ -51,7 +59,7 @@ const schema = yup.object().shape({
 type FormData = yup.InferType<typeof schema>;
 
 export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
-  onTaskCreate,
+  onSubmit: onTaskCreate,
   columns,
   mode,
 }) => {
@@ -60,6 +68,7 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
@@ -68,6 +77,7 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
       title: "",
       status: "",
       description: "",
+      markdownDescription: "",
       assignee: "",
       priority: "medium",
     },
@@ -78,14 +88,19 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
       // TODO: Fix column for edit
       columnId: mode === "edit" && data.status ? data.status : columns[0]._id,
       boardId: columns[0].boardId,
+      projectId: columns[0].projectId,
       priority: data.priority as "low" | "medium" | "high",
       title: data.title,
-      description: data.description ?? "",
+      description: data.markdownDescription ?? "",
       tags: [],
     };
-    onTaskCreate(mappedData);
+    onTaskCreate(mappedData, mode);
     onOpenChange();
     reset();
+  };
+
+  const storeMarkdown = (htmlContent: string | TurndownService.Node) => {
+    setValue("markdownDescription", turndownService.turndown(htmlContent));
   };
 
   return (
@@ -101,7 +116,7 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
           onOpenChange();
           reset();
         }}
-        size="2xl"
+        size="4xl"
       >
         <ModalContent>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -134,9 +149,26 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
                       control={control}
                       render={({ field }) => (
                         <ReactQuill
-                          theme="snow"
                           {...field}
+                          theme="snow"
                           style={{ height: "200px" }}
+                          onChange={(content, delta, source, editor) => {
+                            field.onChange(content);
+                            storeMarkdown(content);
+                          }}
+                          modules={{
+                            toolbar: [
+                              [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                              ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                              [{ 'script': 'sub' }, { 'script': 'super' }],
+                              [{ 'indent': '-1' }, { 'indent': '+1' }, { 'direction': 'rtl' }],
+                              [{ 'color': [] }, { 'background': [] }],
+                              [{ 'align': [] }],
+                              ['link', 'image', 'video'],
+                              ['clean']
+                            ]
+                          }}
                         />
                       )}
                     />
@@ -183,7 +215,6 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
                         label="Assignee"
                         placeholder="Enter assignee name"
                         errorMessage={errors.assignee?.message}
-                        isRequired
                         isInvalid={Boolean(errors.assignee)}
                         className="mb-4"
                       />

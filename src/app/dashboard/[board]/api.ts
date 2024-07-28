@@ -1,3 +1,4 @@
+import { onTaskCreateParams } from "@/components/KanbanBoard/AddEditTaskForm";
 import { FetchError } from "@/lib";
 import { BoardApi, TaskId } from "@/types";
 
@@ -45,5 +46,34 @@ export async function deleteTaskInBoard(currentData: BoardApi | undefined, taskI
   } catch (error) {
     console.error("Error deleting task:", error);
     return Promise.reject(error);
+  }
+}
+
+export async function createTaskInBoard(currentData: BoardApi | undefined, { title, description, priority, tags, assignee, boardId, columnId, projectId }: onTaskCreateParams): Promise<BoardApi | undefined> {
+  console.log("createTaskInBoard", {
+currentData, title, description, priority, tags, assignee, boardId, columnId, projectId
+  });
+  try {
+    fetch(`/api/v1/task`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        description,
+        priority,
+        tags,
+        assignee,
+        columnId,
+        boardId,
+        projectId,
+      }),
+    });
+  } catch (error) {
+    console.error("Error creating task:", error);
+    return Promise.reject(error);
+  } finally {
+    return currentData;
   }
 }

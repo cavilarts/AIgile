@@ -1,5 +1,4 @@
 import { ObjectId, OptionalId } from "mongodb";
-import { Optional } from "./util.types";
 
 export type BoardId = string | ObjectId;
 export type ColumnId = string | ObjectId;
