@@ -15,6 +15,7 @@ import { lazy, Suspense } from "react";
 export default function ProjectPage({ params }: { params: { board: string } }) {
   const { board } = params;
   const notifyDelete = () => toast("Task deleted successfully", { type: "success" });
+  const notifyCreate = () => toast("Task created successfully", { type: "success" });
   const notifyError = () => toast("An error occurred", { type: "error" });
   const { data, isLoading, mutate, error } = useSWR(`/api/v1/project/${board}`, getBoard);
   const { status } = useSession();
@@ -35,6 +36,8 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
       rollbackOnError: false,
       populateCache: false,
       revalidate: true
+    }).then(() => {
+      notifyCreate();
     }).catch((error) => {
       console.error("Error creating task:", error);
       notifyError();
