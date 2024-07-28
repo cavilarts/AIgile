@@ -1,6 +1,17 @@
+import { authOptions } from "@/lib/auth/auth";
+import { getProjectByUser, getUserByEmail } from "@/lib/db";
+import { Project } from "@/types";
 import { Button, Link } from "@nextui-org/react";
+import { getServerSession } from "next-auth";
 
-export default function Hero() {
+export default async function Hero() {
+  const session = await getServerSession(authOptions);
+  const email = session?.user?.email;
+  const user = email ? await getUserByEmail(email) : null;
+  const data = user?.data?._id
+    ? ((await getProjectByUser(user.data._id)) as Project)
+    : null;
+
   return (
     <section className="flex h-full">
       <div className="relative mx-auto max-w-screen-xl px-4 sm:px-6 flex flex-col h-full justify-center items-center">
@@ -20,10 +31,12 @@ export default function Hero() {
             as={Link}
             className="text-white bg-sky-400 text-xl"
             color="primary"
-            href="/chat"
+            href={data && data.slug ? `/dashboard/${data.slug}` : "/chat"}
             variant="solid"
           >
-            Start your project
+            {data && data?.slug
+              ? "Take me to My Project"
+              : "Start your project"}
           </Button>
         </div>
       </div>

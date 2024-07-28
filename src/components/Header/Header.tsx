@@ -29,8 +29,6 @@ export default function Header() {
     fetcher: (url: string) => fetcher(url, email ?? ""),
   });
 
-  console.log(data);
-
   return (
     <Navbar
       onClick={() => setIsMenuOpen((current) => !current)}

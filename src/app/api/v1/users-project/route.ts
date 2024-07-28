@@ -4,8 +4,6 @@ import { NextRequest } from "next/server";
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
 
-  console.log(email);
-
   if (!email) {
     return Response.json(
       { error: "Please provide all required fields" },
@@ -15,8 +13,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const user = await getUserByEmail(email);
-
-    console.log(user);
 
     if (!user) {
       return Response.json({ error: "User not found" }, { status: 404 });
