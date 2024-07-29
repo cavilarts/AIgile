@@ -50,8 +50,7 @@ export async function getUserByEmail(email: string) {
     return {
       data: result,
     };
-  }
-  catch (e) {
+  } catch (e) {
     console.error("getUserByEmail error", e);
     return;
   }
@@ -65,7 +64,7 @@ export async function getSessionUser() {
   }
 
   const user = await getUserByEmail(session?.user?.email);
-  if(!user || !user.data) {
+  if (!user || !user.data) {
     throw new Error("User not found");
   }
 
@@ -95,10 +94,12 @@ export async function patchUser(id: string, data: Partial<User>) {
 
     const result = await user.updateOne(
       { _id: new ObjectId(id) },
-      { $set: {
-        ...data,
-        lastModifiedAt: new Date(),
-      } }
+      {
+        $set: {
+          ...data,
+          lastModifiedAt: new Date(),
+        },
+      }
     );
 
     return result;

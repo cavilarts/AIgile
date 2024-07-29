@@ -16,9 +16,6 @@ export default function ChatPageWrapper() {
     }
   }, [router, status]);
 
-  console.log("status", status);
-  console.log("data", data);
-
   return (
     <>
       {status !== "authenticated" && <div>Loading...</div>}
