@@ -6,7 +6,7 @@ import { onTaskCreateParams } from "@/components/KanbanBoard/AddEditTaskForm";
 import { ColumnApi, TaskApi, TaskId } from "@/types";
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
-import { deleteTaskInBoard, getBoard, updateTaskInBoard } from "./api";
+import { createTaskInBoard, deleteTaskInBoard, getBoard, updateTaskInBoard } from "./api";
 import { cloneDeep } from "lodash";
 const Custom404 = lazy(() => import("@/components/ErrorStatus/Custom404"));
 const Custom500 = lazy(() => import("@/components/ErrorStatus/Custom500"));
@@ -15,6 +15,7 @@ import { lazy, Suspense } from "react";
 export default function ProjectPage({ params }: { params: { board: string } }) {
   const { board } = params;
   const notifyDelete = () => toast("Task deleted successfully", { type: "success" });
+  const notifyCreate = () => toast("Task created successfully", { type: "success" });
   const notifyError = () => toast("An error occurred", { type: "error" });
   const { data, isLoading, mutate, error } = useSWR(`/api/v1/project/${board}`, getBoard);
   const { status } = useSession();
@@ -29,6 +30,19 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
       notifyError();
     });
   };
+
+  const onTaskCreate = function (task: onTaskCreateParams): void {
+    mutate((currentData) => createTaskInBoard(currentData, task), {
+      rollbackOnError: false,
+      populateCache: false,
+      revalidate: true
+    }).then(() => {
+      notifyCreate();
+    }).catch((error) => {
+      console.error("Error creating task:", error);
+      notifyError();
+    });
+  }
 
   return (
     <>
@@ -58,10 +72,7 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
             // TODO: implement here the call to the API to update the column
             console.error("Function not implemented.");
           }}
-          onTaskCreate={function (task: onTaskCreateParams): void {
-            // TODO: implement here the call to the API to create a new task, but first we need to create the create modal
-            return console.error("Function not implemented.");
-          }}
+          onTaskCreate={onTaskCreate}
           onTaskDelete={onTaskDelete}
           onTaskEdit={function (
             taskId: TaskId,

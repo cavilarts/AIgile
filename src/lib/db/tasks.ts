@@ -1,6 +1,7 @@
 import { Db, Collection, OptionalId, ObjectId } from "mongodb";
 import clientPromise from "./mongoConnection";
 import { TaskApi, TaskDB } from "@/types";
+import { getSessionUser } from ".";
 
 let db: Db;
 let task: Collection<TaskDB>;
@@ -25,8 +26,16 @@ async function init() {
 export async function createTask(data: TaskDB) {
   try {
     if (!task) await init();
+    const user = await getSessionUser();
+    
+    const sanitizedData = {
+      ...data,
+      ...(data.columnId && { columnId: new ObjectId(data.columnId) }),
+      ...(data.projectId && { projectId: new ObjectId(data.projectId) }),
+      createdBy: user.data._id,
+    };
 
-    const result = await task.insertOne(data);
+    const result = await task.insertOne(sanitizedData);
 
     return result;
   } catch (e) {

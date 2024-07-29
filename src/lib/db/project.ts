@@ -40,11 +40,10 @@ export async function getProjectBySlug(
   slug: string
 ): Promise<WithId<Optional<Project, "boardName" | "tasks">> | null> {
   try {
-    // const user = await getSessionUser();
+    const user = await getSessionUser();
     if (!project) await init();
 
-    const result = await project.findOne({ slug });
-    // const result = await project.findOne({ slug, createdBy: user.data._id });
+    const result = await project.findOne({ slug, createdBy: user.data._id });
 
     if (!result) return null;
 
