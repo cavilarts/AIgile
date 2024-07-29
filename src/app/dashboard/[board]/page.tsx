@@ -8,6 +8,9 @@ import { useSession } from "next-auth/react";
 import useSWR from "swr";
 import { deleteTaskInBoard, getBoard, updateTaskInBoard } from "./api";
 import { cloneDeep } from "lodash";
+const Custom404 = lazy(() => import("@/components/ErrorStatus/Custom404"));
+const Custom500 = lazy(() => import("@/components/ErrorStatus/Custom500"));
+import { lazy, Suspense } from "react";
 
 export default function ProjectPage({ params }: { params: { board: string } }) {
   const { board } = params;
@@ -30,9 +33,16 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
   return (
     <>
       {status !== "authenticated" && isLoading && <div>Loading...</div>}
+      {status === "authenticated" && error && error?.status === 404 ? (
+        <Suspense fallback={<div>Loading...</div>}>
+          <Custom404 />
+        </Suspense >
+      ) : <Suspense fallback={<div>Loading...</div>}>
+        <Custom500 />
+      </Suspense >}
       {status === "authenticated" && data && (
         <KanbanBoard
-          columns={data.columns.map((column) => ({
+          columns={data?.columns?.map((column) => ({
             ...column,
             _id: column._id,
             title: column.name,

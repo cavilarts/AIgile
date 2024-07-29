@@ -1,7 +1,6 @@
 import {
   getColumnsByProjectId,
   getProjectBySlug,
-  getTasksByColumnId,
   getTasksQuery,
 } from "@/lib/db";
 import { NextRequest } from "next/server";
@@ -18,13 +17,15 @@ export async function GET(req: NextRequest) {
 
   try {
     const project = await getProjectBySlug(slug);
-    if (!project) throw new Error("Project not found");
-    const columns = await getColumnsByProjectId(String(project._id));
-
-    console.log('columns', columns);
-
     if (!project) {
       return Response.json({ error: "Project not found" }, { status: 404 });
+    }
+    const columns = await getColumnsByProjectId(String(project._id));
+    if (!columns) {
+      return Response.json(
+        { error: "An error occurred while fetching columns" },
+        { status: 500 }
+      );
     }
 
     const columnsWithTasks = await Promise.all(
@@ -38,8 +39,12 @@ export async function GET(req: NextRequest) {
       })
     );
 
-    console.log('columnsWithTasks', columnsWithTasks);
-
+    if (!columnsWithTasks) {
+      return Response.json(
+        { error: "An error occurred while fetching tasks" },
+        { status: 500 }
+      );
+    }
     return Response.json({ ...project, columns: columnsWithTasks });
   } catch (e) {
     console.error("getProject error", e);

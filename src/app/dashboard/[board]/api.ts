@@ -1,7 +1,16 @@
-import { BoardApi, Task, TaskApi, TaskId } from "@/types"
+import { FetchError } from "@/lib";
+import { BoardApi, TaskId } from "@/types";
 
 export async function getBoard(url: string): Promise<BoardApi> {
-  return fetch(url).then((res) => res.json());
+  const response = await fetch(url);
+  if (!response.ok) {
+    const error = new FetchError('An error occurred while fetching the data.');
+    // Attach extra info to the error object.
+    error.info = await response.json();
+    error.status = response.status;
+    throw error;
+  }
+  return response.json();
 }
 
 export async function updateTaskInBoard(currentData: BoardApi | undefined, { taskId, sourceColumn, targetColumn }: { taskId: TaskId, sourceColumn: string, targetColumn: string }): Promise<BoardApi | undefined> {
