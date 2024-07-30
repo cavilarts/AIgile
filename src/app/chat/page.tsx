@@ -1,4 +1,5 @@
 import ChatPageWrapper from "@/components/Chat/ChatPageWrapper";
+import { DashboardLayout } from "@/layouts";
 import { nanoid } from "@/lib";
 import { AI } from "@/lib/chat/actions";
 
@@ -12,8 +13,10 @@ export default function ChatPage() {
   const id = nanoid();
 
   return (
-    <AI initialAIState={{ id: id, interactions: [], messages: [] }}>
-      <ChatPageWrapper />
-    </AI>
+    <DashboardLayout>
+      <AI initialAIState={{ id: id, interactions: [], messages: [] }}>
+        <ChatPageWrapper />
+      </AI>
+    </DashboardLayout>
   );
 }

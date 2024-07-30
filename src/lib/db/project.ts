@@ -54,6 +54,19 @@ export async function getProjectBySlug(
   }
 }
 
+export async function getProjectByUser(userId: ObjectId) {
+  try {
+    if (!project) await init();
+
+    const result = await project.findOne({ createdBy: new ObjectId(userId) });
+
+    return result;
+  } catch (e) {
+    console.error("getProjects error", e);
+    return [];
+  }
+}
+
 export async function createProject(
   data: Optional<
     Project,

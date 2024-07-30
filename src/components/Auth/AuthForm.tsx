@@ -26,7 +26,6 @@ export function AuthForm(props: AuthFormProps) {
     if (signInResponse && !signInResponse.error) {
       router.push("/chat");
     } else {
-      console.log("Error: ", signInResponse);
       setError("Invalid email or password");
     }
   };

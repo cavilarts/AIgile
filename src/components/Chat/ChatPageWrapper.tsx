@@ -12,7 +12,7 @@ export default function ChatPageWrapper() {
 
   useEffect(() => {
     if (status !== "authenticated") {
-      router.push("/login");
+      router.push("/sign-in");
     }
   }, [router, status]);
 
@@ -20,7 +20,7 @@ export default function ChatPageWrapper() {
     <>
       {status !== "authenticated" && <div>Loading...</div>}
       {status === "authenticated" && (
-        <section className="h-screen flex flex-col">
+        <section className="h-[85vh] flex flex-col">
           <Messages />
           <div className="h-px w-full" />
           <PromptForm />

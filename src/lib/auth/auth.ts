@@ -4,7 +4,7 @@ import { createUser, getUserByEmail } from "../db";
 
 export const authOptions: NextAuthOptions = {
   pages: {
-    signIn: "/auth/login",
+    signIn: "/auth/sign-in",
     signOut: "/auth/logout",
   },
   session: {
@@ -18,15 +18,15 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({user }) {
+    async signIn({ user }) {
       try {
         if (user && user.email) {
           const foundUser = await getUserByEmail(user?.email);
-          if(foundUser) return true;
+          if (foundUser) return true;
 
           await createUser({
             email: user.email,
-            name: user.name ?? '',
+            name: user.name ?? "",
             profileImage: user.image,
           });
 
@@ -39,6 +39,6 @@ export const authOptions: NextAuthOptions = {
         console.error("signIn error", e);
         return false;
       }
-    }
-  }
+    },
+  },
 };
