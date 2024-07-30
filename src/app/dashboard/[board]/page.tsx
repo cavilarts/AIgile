@@ -61,11 +61,12 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
   return (
     <>
       {status !== "authenticated" && isLoading && <div>Loading...</div>}
-      {status === "authenticated" && error && error?.status === 404 ? (
+      {status === "authenticated" && error && error?.status === 404 && (
         <Suspense fallback={<div>Loading...</div>}>
           <Custom404 />
         </Suspense>
-      ) : (
+      )}
+      {status === "authenticated" && error && error?.status === 500 && (
         <Suspense fallback={<div>Loading...</div>}>
           <Custom500 />
         </Suspense>
