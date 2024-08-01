@@ -1,7 +1,7 @@
-import { DashboardLayout} from "@/layouts";
-import { ColumnApi, TaskApi, TaskId } from "@/types";
-import { Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
-import { AddEditTaskForm, onTaskCreateParams, TaskAction } from "./AddEditTaskForm";
+import { DashboardLayout } from "@/layouts";
+import { ColumnApi, TaskId } from "@/types";
+import { Button, Navbar, NavbarContent, NavbarItem, useDisclosure } from "@nextui-org/react";
+import { AddEditTaskForm, CreateEditForm, TaskAction } from "./AddEditTaskForm";
 import { Column } from "./Column";
 
 export type KanbanBoardProps = {
@@ -11,9 +11,9 @@ export type KanbanBoardProps = {
     sourceColumn: string,
     targetColumn: string
   ) => void;
-  onTaskEdit: (taskId: TaskId, updatedTask: Partial<TaskApi>) => void;
+  onTaskEdit: (task: CreateEditForm) => void;
   onTaskDelete: (taskId: TaskId) => void;
-  onTaskCreate: (task: onTaskCreateParams) => void;
+  onTaskCreate: (task: CreateEditForm) => void;
   // TODO: Implement the onColumnCreate function and the create modal
   onColumnCreate: (column: Omit<ColumnApi, "id" | "tasks">) => void;
   // TODO: Implement the onColumnEdit function and the edit modal
@@ -29,12 +29,17 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onColumnCreate,
   onColumnEdit,
 }) => {
+  const modalDisclosure = useDisclosure();
+
   return (
     <DashboardLayout>
       <Navbar>
         <NavbarContent justify="end">
           <NavbarItem>
-            <AddEditTaskForm columns={columns} onSubmit={onTaskCreate} mode={TaskAction.ADD} />
+            <Button color="primary" onPress={modalDisclosure.onOpen}>
+              Add New Task
+            </Button>
+            <AddEditTaskForm columns={columns} onSubmit={onTaskCreate} mode={TaskAction.ADD} modalDisclosure={modalDisclosure} />
           </NavbarItem>
         </NavbarContent>
       </Navbar>

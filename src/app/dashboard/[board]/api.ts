@@ -1,4 +1,4 @@
-import { onTaskCreateParams } from "@/components/KanbanBoard/AddEditTaskForm";
+import { CreateEditForm } from "@/components/KanbanBoard/AddEditTaskForm";
 import { FetchError } from "@/lib";
 import { BoardApi, TaskId } from "@/types";
 
@@ -14,7 +14,7 @@ export async function getBoard(url: string): Promise<BoardApi> {
   return response.json();
 }
 
-export async function updateTaskInBoard(currentData: BoardApi | undefined, { taskId, sourceColumn, targetColumn }: { taskId: TaskId, sourceColumn: string, targetColumn: string }): Promise<BoardApi | undefined> {
+export async function moveTaskInBoard(currentData: BoardApi | undefined, { taskId, sourceColumn, targetColumn }: { taskId: TaskId, sourceColumn: string, targetColumn: string }): Promise<BoardApi | undefined> {
   try {
     fetch(`/api/v1/task?id=${taskId}`, {
       method: "PATCH",
@@ -49,10 +49,12 @@ export async function deleteTaskInBoard(currentData: BoardApi | undefined, taskI
   }
 }
 
-export async function createTaskInBoard(currentData: BoardApi | undefined, { title, description, priority, tags, assignee, boardId, columnId, projectId }: onTaskCreateParams): Promise<BoardApi | undefined> {
+export async function createTaskInBoard(currentData: BoardApi | undefined, tasks: CreateEditForm): Promise<BoardApi | undefined> {
+  const { title, description, priority, tags, assignee, columnId, boardId, projectId } = tasks;
   console.log("createTaskInBoard", {
-currentData, title, description, priority, tags, assignee, boardId, columnId, projectId
+    currentData, title, description, priority, tags, assignee, boardId, columnId, projectId
   });
+  console.log("tasks", tasks);
   try {
     fetch(`/api/v1/task`, {
       method: "POST",
@@ -72,6 +74,38 @@ currentData, title, description, priority, tags, assignee, boardId, columnId, pr
     });
   } catch (error) {
     console.error("Error creating task:", error);
+    return Promise.reject(error);
+  } finally {
+    return currentData;
+  }
+}
+
+export async function updateTaskInBoard(currentData: BoardApi | undefined, tasks: CreateEditForm): Promise<BoardApi | undefined> {
+  const { _id, title, description, priority, tags, assignee, columnId, boardId, projectId } = tasks;
+  console.log("updateTaskInBoard", {
+    currentData, title, description, priority, tags, assignee, boardId, columnId, projectId
+  });
+  console.log("tasks", tasks);
+  try {
+    fetch(`/api/v1/task?id=${_id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        _id,
+        title,
+        description,
+        priority,
+        tags,
+        assignee,
+        columnId,
+        boardId,
+        projectId,
+      }),
+    });
+  } catch (error) {
+    console.error("Error updating task:", error);
     return Promise.reject(error);
   } finally {
     return currentData;

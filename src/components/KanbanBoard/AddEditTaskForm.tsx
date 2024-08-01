@@ -1,4 +1,4 @@
-import { ColumnApi, TaskApi } from "@/types";
+import { ColumnApi, Optional, TaskApi } from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Button,
@@ -23,10 +23,11 @@ const ReactQuill = dynamic(() => import("react-quill"), {
 const turndownService = new TurndownService();
 
 import "react-quill/dist/quill.snow.css";
+import { useMount } from "ahooks";
 
-export type onTaskCreateParams = Omit<
-  TaskApi,
-  "_id" | "createdAt" | "createdBy"
+export type CreateEditForm = Omit<
+  Optional<TaskApi, '_id'>,
+  "createdAt" | "createdBy"
 >;
 
 export enum TaskAction {
@@ -35,14 +36,17 @@ export enum TaskAction {
 }
 
 type AddTaskFormProps = {
-  onSubmit: (task: onTaskCreateParams, mode: TaskAction) => void;
+  onSubmit: ((task: CreateEditForm) => void);
   columns: ColumnApi[];
   mode: TaskAction;
+  modalDisclosure: ReturnType<typeof useDisclosure>;
+  initialData?: CreateEditForm;
 };
 
 const schema = yup.object().shape({
+  taskId: yup.string(),
   title: yup.string().required("Title is required"),
-  status: yup.string().when("$mode", {
+  column: yup.string().when("$mode", {
     is: "edit",
     then: (schema) => schema.required("Status is required"),
     otherwise: (schema) => schema.notRequired(),
@@ -59,13 +63,15 @@ const schema = yup.object().shape({
 type FormData = yup.InferType<typeof schema>;
 
 export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
-  onSubmit: onTaskCreate,
+  onSubmit: onTaskSubmit,
   columns,
   mode,
+  modalDisclosure: { isOpen, onOpenChange },
+  initialData
 }) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
     control,
+    getValues,
     handleSubmit,
     reset,
     setValue,
@@ -75,7 +81,7 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
     context: { mode },
     defaultValues: {
       title: "",
-      status: "",
+      column: "",
       description: "",
       markdownDescription: "",
       assignee: "",
@@ -84,9 +90,10 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
   });
 
   const onSubmit = (data: FormData) => {
-    const mappedData: onTaskCreateParams = {
-      // TODO: Fix column for edit
-      columnId: mode === "edit" && data.status ? data.status : columns[0]._id,
+    const mappedData: CreateEditForm = {
+      _id: data.taskId,
+      assignee: data.assignee,
+      columnId: columns[0]._id,
       boardId: columns[0].boardId,
       projectId: columns[0].projectId,
       priority: data.priority as "low" | "medium" | "high",
@@ -94,7 +101,8 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
       description: data.markdownDescription ?? "",
       tags: [],
     };
-    onTaskCreate(mappedData, mode);
+
+    onTaskSubmit(mappedData);
     onOpenChange();
     reset();
   };
@@ -103,12 +111,21 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
     setValue("markdownDescription", turndownService.turndown(htmlContent));
   };
 
+  useMount(() => {
+    if (initialData) {
+      console.log("initialData", initialData);
+      if (initialData._id) setValue("taskId", String(initialData._id));
+
+      setValue("title", initialData.title);
+      setValue("description", initialData.description);
+      if(initialData.columnId) setValue("column", String(initialData.columnId));
+      if (initialData.assignee) setValue("assignee", String(initialData.assignee));
+      if (initialData.priority) setValue("priority", initialData.priority);
+    }
+  })
+
   return (
     <>
-      <Button color="primary" onPress={onOpen}>
-        Add New Task
-      </Button>
-
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
@@ -121,7 +138,7 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
         <ModalContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <ModalHeader>
-              <h3>Add New Task</h3>
+              {mode === "edit" ? <h3>Edit Task</h3> : <h3>Add New Task</h3>}
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-col md:flex-row gap-4">
@@ -183,14 +200,15 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
                 <div className="w-full md:w-1/3">
                   {mode === "edit" && (
                     <Controller
-                      name="status"
+                      name="column"
                       control={control}
                       render={({ field }) => (
                         <Select
                           {...field}
+                          defaultSelectedKeys={field.value ? [field.value] : []}
                           label="Status"
                           placeholder="Select status"
-                          errorMessage={errors.status?.message}
+                          errorMessage={errors.column?.message}
                           className="mb-4"
                         >
                           {columns.map((column) => (
@@ -227,6 +245,7 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
                       <Select
                         {...field}
                         label="Priority"
+                        defaultSelectedKeys={[field.value]}
                         errorMessage={errors.priority?.message}
                       >
                         <SelectItem key="low" value="low">
@@ -253,7 +272,7 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
                 Cancel
               </Button>
               <Button color="primary" type="submit">
-                Add Task
+                {mode === "edit" ? "Update Task" : "Add Task"}
               </Button>
             </ModalFooter>
           </form>
