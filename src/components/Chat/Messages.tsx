@@ -14,14 +14,6 @@ export default function Messages({}: MessagesProps) {
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } =
     useScrollAnchor();
 
-  console.log(isAtBottom);
-
-  useEffect(() => {
-    if (isAtBottom) {
-      scrollToBottom();
-    }
-  }, [isAtBottom, scrollToBottom]);
-
   return (
     <section
       className="w-full h-full overflow-auto flex items-center justify-end flex-col"
@@ -46,26 +38,27 @@ export default function Messages({}: MessagesProps) {
       </Button>
       <div
         key={crypto.randomUUID()}
-        className="w-full h-[5000000px] overflow-y-scroll"
+        className="w-full h-fit overflow-y-scroll flex flex-col-reverse"
         ref={messagesRef}
       >
-        {messages.length > 0 && (
-          <>
-            {messages.map((message: any) => (
-              <div key={message.id}>
-                {message.spinner}
-                {message.display}
-                {message.attachments}
-              </div>
-            ))}
-            <div
-              className="w-full h-[1px]"
-              key={"vrf"}
-              ref={visibilityRef}
-              id={"end-of-messages"}
-            />
-          </>
-        )}
+        <div
+          className="w-full"
+          key={"vrf"}
+          ref={visibilityRef}
+          id={"end-of-messages"}
+        >
+          {messages.length > 0 && (
+            <>
+              {messages.map((message: any) => (
+                <div key={message.id}>
+                  {message.spinner}
+                  {message.display}
+                  {message.attachments}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
       </div>
     </section>
   );

@@ -9,13 +9,10 @@ export const useScrollAnchor = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   const scrollToBottom = useCallback(() => {
-    if (visibilityRef.current) {
-      visibilityRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
+    if (messagesRef.current) {
+      messagesRef.current.scrollTo(0, messagesRef.current.scrollHeight);
     }
-  }, [visibilityRef]);
+  }, [messagesRef]);
 
   const handleVisibilityChange = useCallback(() => {
     if (messagesRef.current) {
@@ -45,7 +42,7 @@ export const useScrollAnchor = () => {
   useEffect(() => {
     if (isAtBottom) {
       setTimeout(() => {
-        // scrollToBottom();
+        scrollToBottom();
       }, 100);
     }
   }, [isAtBottom, scrollToBottom]);
@@ -57,9 +54,9 @@ export const useScrollAnchor = () => {
       const target = event.target as HTMLDivElement;
       const offset = 25;
       const iab =
-        target.scrollTop + target.clientHeight >= target.scrollHeight - offset;
+        target.scrollTop + target.clientHeight <= target.scrollHeight - offset;
 
-      setIsAtBottom(iab);
+      setIsAtBottom(!iab);
     };
 
     current?.addEventListener("scroll", handleScroll, true);
