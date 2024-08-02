@@ -6,13 +6,14 @@ import classNames from "classnames";
 import { Children, useRef, useState } from "react";
 import { TaskCard } from "./TaskCard";
 import { ColumnApi, TaskApi, TaskId } from "@/types";
+import { CreateEditForm } from "./AddEditTaskForm";
 
 export type ColumnProps = {
   className?: string;
   column: ColumnApi;
   tasks: TaskApi[];
   index: number;
-  onTaskEdit: (taskId: TaskId, updatedTask: Partial<TaskApi>) => void;
+  onTaskEdit: (task: CreateEditForm) => void;
   onTaskDelete: (taskId: TaskId) => void;
   onTaskMove: (
     taskId: TaskId,
@@ -64,7 +65,7 @@ export const Column: React.FC<ColumnProps> = ({
           tasks.map((task) => (
             <TaskCard
               key={String(task._id)}
-              columnId={String(column._id)}
+              column={column}
               task={task}
               onEdit={onTaskEdit}
               onDelete={onTaskDelete}

@@ -2,6 +2,7 @@ import { Db, Collection, OptionalId, ObjectId } from "mongodb";
 import clientPromise from "./mongoConnection";
 import { TaskApi, TaskDB } from "@/types";
 import { getSessionUser } from ".";
+import { omit } from "lodash";
 
 let db: Db;
 let task: Collection<TaskDB>;
@@ -107,7 +108,8 @@ export async function patchTask(id: string, data: Partial<TaskDB>) {
     if (!task) await init();
     // Remap data if it contains an _id
     const sanitizedResult = {
-      ...data,
+      ...omit(data, "_id"),
+      ...(data.projectId && { projectId: new ObjectId(data.projectId) }),
       ...(data.columnId && { columnId: new ObjectId(data.columnId) }),
       ...(data.projectId && { boardId: new ObjectId(data.projectId) }),
     };
@@ -117,6 +119,7 @@ export async function patchTask(id: string, data: Partial<TaskDB>) {
       { $set: { ...sanitizedResult } }
     );
 
+    console.log('result', result);
     return result;
   } catch (e) {
     console.error("patchTask error", e);

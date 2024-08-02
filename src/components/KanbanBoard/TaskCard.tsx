@@ -3,44 +3,45 @@
 import { useCallback, useRef } from "react";
 import { useDrag } from "ahooks";
 import { Card, CardBody, ChipProps, CardHeader, Chip, CardFooter, Dropdown, DropdownTrigger, Button, DropdownMenu, DropdownItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
-import { TaskApi, TaskId } from "@/types";
+import { ColumnApi, TaskApi, TaskId } from "@/types";
 import { capitalize } from "@/lib";
 import { EllipsisVertical } from "../icons";
+import { AddEditTaskForm, CreateEditForm, TaskAction } from "./AddEditTaskForm";
 
 export type TaskCardProps = {
   task: TaskApi;
-  onEdit: (taskId: TaskId, updatedData: Partial<TaskApi>) => void;
+  onEdit: (task: CreateEditForm) => void;
   onDelete: (taskId: TaskId) => void;
-  columnId: string;
+  column: ColumnApi;
 };
 
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   onEdit,
   onDelete,
-  columnId,
+  column,
 }) => {
   const dragRef = useRef<HTMLDivElement>(null);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const deleteModal = useDisclosure();
+  const editModalDisclosure = useDisclosure();
 
   const handleAction = useCallback((key: string) => {
     if (key === "edit") {
-      // TODO: implement the edit modal
-      onEdit(task._id, task);
+      editModalDisclosure.onOpen();
     } else if (key === "delete") {
-      onOpen();
+      deleteModal.onOpen();
     }
-  }, [onEdit, task, onOpen]);
+  }, [editModalDisclosure, deleteModal]);
 
   const handleDeleteConfirm = useCallback(() => {
     onDelete(task._id);
-    onOpenChange();
-  }, [onDelete, onOpenChange, task._id]);
+    deleteModal.onOpenChange();
+  }, [onDelete, task._id, deleteModal]);
 
   useDrag({ data: task?._id }, dragRef, {
     onDragStart: (e) => {
       e.dataTransfer.setData("taskId", String(task?._id));
-      e.dataTransfer.setData("sourceColumnId", columnId);
+      e.dataTransfer.setData("sourceColumnId", String(column._id));
     },
   });
 
@@ -73,22 +74,22 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
         <CardBody className="text-sm">
           <p>{task.description}</p>
-          {task?.assignee && <span>Assignee: {String(task.assignee)}</span>}
         </CardBody>
         <CardFooter>
+            {task?.assignee && <span ><b>Assignee</b>: {String(task.assignee)}</span>}
             {task?.priority && (
               <Chip
-                className="ml-2 mb-1"
+                className="mb-1 ml-auto"
                 color={getPriorityColor(task.priority)}
                 size="sm"
               >
                 {capitalize(task.priority)}
               </Chip>
-            )}
+          )}
         </CardFooter>
       </Card>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={deleteModal.isOpen} onOpenChange={deleteModal.onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
@@ -109,6 +110,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           )}
         </ModalContent>
       </Modal>
+
+      <AddEditTaskForm columns={[column]} initialData={task} onSubmit={onEdit} mode={TaskAction.EDIT} modalDisclosure={editModalDisclosure} />
     </>
   );
 };

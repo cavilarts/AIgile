@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
     tags,
     projectId,
     boardId,
+    assignee,
     columnId,
     createdBy,
   } = await requestBody;
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
       tags,
       projectId,
       boardId,
+      assignee,
       columnId,
       createdAt: new Date(),
       createdBy,
