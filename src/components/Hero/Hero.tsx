@@ -22,7 +22,7 @@ export default async function Hero() {
           </strong>{" "}
           Project Management Partner
         </h1>
-        <p className="mt-4 max-w-lg sm:text-xl/relaxed text-slate-300 text-left sm:text-center">
+        <p className="mt-4 max-w-lg sm:text-xl/relaxed text-secondary-900 text-left sm:text-center">
           Effortlessly transform requirements into actionable user stories,
           prioritize tasks, and keep your team on the same page.
         </p>

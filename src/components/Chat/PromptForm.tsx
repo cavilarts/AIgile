@@ -9,7 +9,6 @@ import { ChangeEventHandler, useRef, useState } from "react";
 import UserMessage from "./UserMessage";
 import { IoSend } from "react-icons/io5";
 import { Message } from "ai";
-import { ClientMessage } from "@/types/ai.types";
 
 export default function PromptForm() {
   const { formRef, onKeyDown } = useEnterSubmit();
@@ -17,6 +16,14 @@ export default function PromptForm() {
   const { submitUserMessage } = useActions();
   const [messages, setMessages] = useUIState();
   const [input, setInput] = useState("");
+
+  const scrollToBottom = () => {
+    const messagesRef = document.getElementById("end-of-messages");
+    messagesRef?.scrollTo({
+      top: messagesRef.scrollHeight,
+      behavior: "smooth",
+    });
+  };
 
   const handleOnChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setInput(e.target.value);
@@ -45,6 +52,8 @@ export default function PromptForm() {
       setMessages((prev: Array<Message>) => {
         return prev ? [...prev, responseMessage] : [responseMessage];
       });
+
+      scrollToBottom();
     } catch (error) {
       console.error(error);
     }
