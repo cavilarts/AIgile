@@ -20,9 +20,8 @@ export default function ChatPageWrapper() {
     <>
       {status !== "authenticated" && <div>Loading...</div>}
       {status === "authenticated" && (
-        <section className="h-[85vh] flex flex-col">
+        <section className="h-[85vh] flex flex-col overflow-hidden">
           <Messages />
-          <div className="h-px w-full" />
           <PromptForm />
         </section>
       )}

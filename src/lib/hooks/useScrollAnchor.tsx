@@ -10,50 +10,12 @@ export const useScrollAnchor = () => {
 
   const scrollToBottom = useCallback(() => {
     if (messagesRef.current) {
-      messagesRef.current.scrollIntoView({
-        block: "end",
-        behavior: "smooth",
-      });
+      messagesRef.current.scrollTo(0, messagesRef.current.scrollHeight);
     }
-  }, []);
+  }, [messagesRef]);
 
-  useEffect(() => {
+  const handleVisibilityChange = useCallback(() => {
     if (messagesRef.current) {
-      if (isAtBottom && !isVisible) {
-        messagesRef.current.scrollIntoView({
-          block: "end",
-          behavior: "smooth",
-        });
-      }
-    }
-  }, [isAtBottom, isVisible]);
-
-  useEffect(() => {
-    const { current } = scrollRef;
-
-    if (current) {
-      const handleScroll = (event: Event) => {
-        const target = event.target as HTMLDivElement;
-        const offset = 25;
-        const isAtBottom =
-          target.scrollTop + target.clientHeight >=
-          target.scrollHeight - offset;
-
-        setIsAtBottom(isAtBottom);
-      };
-
-      current.addEventListener("scroll", handleScroll, {
-        passive: true,
-      });
-
-      return () => {
-        current.removeEventListener("scroll", handleScroll);
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    if (visibilityRef.current) {
       let observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -69,13 +31,46 @@ export const useScrollAnchor = () => {
         }
       );
 
-      observer.observe(visibilityRef.current);
+      observer.observe(messagesRef.current);
 
       return () => {
         observer.disconnect();
       };
     }
-  });
+  }, [messagesRef]);
+
+  useEffect(() => {
+    if (isAtBottom) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [isAtBottom, scrollToBottom]);
+
+  useEffect(() => {
+    const { current } = scrollRef;
+
+    const handleScroll = (event: Event) => {
+      const target = event.target as HTMLDivElement;
+      const offset = 25;
+      const iab =
+        target.scrollTop + target.clientHeight <= target.scrollHeight - offset;
+
+      setIsAtBottom(!iab);
+    };
+
+    current?.addEventListener("scroll", handleScroll, true);
+
+    return () => {
+      current?.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (visibilityRef.current) {
+      handleVisibilityChange();
+    }
+  }, [handleVisibilityChange]);
 
   return {
     messagesRef,

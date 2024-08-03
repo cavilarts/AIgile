@@ -5,32 +5,25 @@ import { EmptyMessages } from "./Emptymessages";
 import { useScrollAnchor } from "@/lib/hooks/useScrollAnchor";
 import { Button } from "@nextui-org/react";
 import { FaChevronDown } from "react-icons/fa";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export type MessagesProps = {};
 
 export default function Messages({}: MessagesProps) {
   const [messages] = useUIState();
-
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } =
     useScrollAnchor();
 
-  if (!messages.length) {
-    return (
-      <section className="w-full flex-auto overflow-auto flex items-center justify-center flex-col">
-        <EmptyMessages />
-      </section>
-    );
-  }
-
   return (
     <section
-      className="w-full h-full overflow-hidden flex items-center justify-end flex-col"
+      className="w-full h-full overflow-auto flex items-center justify-end flex-col"
       ref={scrollRef}
     >
-      {isAtBottom}
+      {!messages.length && (
+        <section className="w-full flex-auto overflow-auto flex items-center justify-center flex-col">
+          <EmptyMessages />
+        </section>
+      )}
       <Button
         color="primary"
         radius="full"
@@ -43,19 +36,29 @@ export default function Messages({}: MessagesProps) {
         <FaChevronDown />
         <span className="sr-only">Scroll to bottom</span>
       </Button>
-      <div className="h-px w-full" ref={visibilityRef} />
       <div
         key={crypto.randomUUID()}
-        className="w-full h-fit overflow-y-scroll"
+        className="w-full h-fit overflow-y-scroll flex flex-col-reverse"
         ref={messagesRef}
       >
-        {messages.map((message: any) => (
-          <div key={message.id}>
-            {message.spinner}
-            {message.display}
-            {message.attachments}
-          </div>
-        ))}
+        <div
+          className="w-full"
+          key={"vrf"}
+          ref={visibilityRef}
+          id={"end-of-messages"}
+        >
+          {messages.length > 0 && (
+            <>
+              {messages.map((message: any) => (
+                <div key={message.id}>
+                  {message.spinner}
+                  {message.display}
+                  {message.attachments}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
       </div>
     </section>
   );

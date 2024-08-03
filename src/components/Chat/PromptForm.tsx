@@ -9,7 +9,7 @@ import { ChangeEventHandler, useRef, useState } from "react";
 import UserMessage from "./UserMessage";
 import { IoSend } from "react-icons/io5";
 import { Message } from "ai";
-import { ClientMessage } from "@/types/ai.types";
+import { useScrollAnchor } from "@/lib/hooks/useScrollAnchor";
 
 export default function PromptForm() {
   const { formRef, onKeyDown } = useEnterSubmit();
@@ -17,6 +17,7 @@ export default function PromptForm() {
   const { submitUserMessage } = useActions();
   const [messages, setMessages] = useUIState();
   const [input, setInput] = useState("");
+  const { scrollToBottom } = useScrollAnchor();
 
   const handleOnChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setInput(e.target.value);
@@ -24,6 +25,8 @@ export default function PromptForm() {
 
   const onSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    scrollToBottom();
+
     const message = input.trim();
 
     setInput("");
@@ -45,6 +48,8 @@ export default function PromptForm() {
       setMessages((prev: Array<Message>) => {
         return prev ? [...prev, responseMessage] : [responseMessage];
       });
+
+      scrollToBottom();
     } catch (error) {
       console.error(error);
     }
