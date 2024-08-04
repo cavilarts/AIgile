@@ -32,19 +32,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const modalDisclosure = useDisclosure();
 
   return (
-    <DashboardLayout>
-      <Navbar>
-        <NavbarContent justify="end">
-          <NavbarItem>
-            <Button color="primary" onPress={modalDisclosure.onOpen}>
-              Add New Task
-            </Button>
-            <AddEditTaskForm columns={columns} onSubmit={onTaskCreate} mode={TaskAction.ADD} modalDisclosure={modalDisclosure} />
-          </NavbarItem>
-        </NavbarContent>
-      </Navbar>
+    <DashboardLayout menuContent={[
+      <NavbarContent justify="end" key='navbar-content'>
+        <NavbarItem>
+          <Button color="primary" onPress={modalDisclosure.onOpen}>
+            Add New Task
+          </Button>
+          <AddEditTaskForm columns={columns} onSubmit={onTaskCreate} mode={TaskAction.ADD} modalDisclosure={modalDisclosure} />
+        </NavbarItem>
+      </NavbarContent>
+    ]}>
+
       <div className="h-full w-full">
-        <div className="flex overflow-x-auto space-x-4 space-y-4 p-4 w-full bg-none m-auto flex-no-wrap">
+        <div className="flex overflow-x-auto space-x-4  p-4 w-full bg-none m-auto flex-no-wrap">
           {columns.map((column, index) => {
             if (!column) return null;
 

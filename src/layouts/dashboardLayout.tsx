@@ -2,12 +2,17 @@
 
 import DashBoardMenu from "@/components/DashBoardMenu/DashBoardMenu";
 
-export const DashboardLayout: React.FC<React.PropsWithChildren<{}>> = ({
+export type DashboardLayoutProps = {
+  menuContent?: React.ReactNode[];
+} & React.PropsWithChildren<{}>;
+
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
+  menuContent
 }) => {
   return (
     <div className="relative flex flex-col h-screen">
-      <DashBoardMenu />
+      <DashBoardMenu menuContent={menuContent} />
       <main className="relative container mx-auto max-w-7xl z-10 px-6 min-h-[calc(100vh_-_64px_-_108px)] mb-12 flex-grow">
         {children}
       </main>

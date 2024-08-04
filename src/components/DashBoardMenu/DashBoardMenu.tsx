@@ -7,14 +7,20 @@ import {
   NavbarItem,
 } from "@nextui-org/react";
 import { signOut, useSession } from "next-auth/react";
+import React from "react";
 
-export default function DashBoardMenu() {
+export type DashBoardMenuProps = {
+  menuContent?: React.ReactNode[];
+};
+
+export default function DashBoardMenu({menuContent}: DashBoardMenuProps): React.ReactElement {
   const { data: userData, status } = useSession();
 
   return (
     <Navbar>
       <NavbarContent>
         <NavbarBrand>AIgile</NavbarBrand>
+        {menuContent}
         <NavbarContent className="flex gap-4" justify="end">
           <NavbarItem>Welcome, {userData?.user?.name ?? "Guest"}</NavbarItem>
           <NavbarItem>
