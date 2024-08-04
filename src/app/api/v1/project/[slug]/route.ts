@@ -1,4 +1,5 @@
 import {
+  getBoardName,
   getColumnsByProjectId,
   getProjectBySlug,
   getTasksQuery,
@@ -17,6 +18,9 @@ export async function GET(req: NextRequest) {
 
   try {
     const project = await getProjectBySlug(slug);
+    let boardName;
+    let boardId;
+
     if (!project) {
       return Response.json({ error: "Project not found" }, { status: 404 });
     }
@@ -27,6 +31,12 @@ export async function GET(req: NextRequest) {
         { status: 500 }
       );
     }
+    if (project.boardName) {
+      boardId = String(project.boardName);
+      boardName = await getBoardName(String(project.boardName));
+    }
+
+    console.log("boardName", boardName);
 
     const columnsWithTasks = await Promise.all(
       columns.map(async (column) => {
@@ -45,7 +55,7 @@ export async function GET(req: NextRequest) {
         { status: 500 }
       );
     }
-    return Response.json({ ...project, columns: columnsWithTasks });
+    return Response.json({ ...project, boardId, boardName, columns: columnsWithTasks });
   } catch (e) {
     console.error("getProject error", e);
     return Response.json(

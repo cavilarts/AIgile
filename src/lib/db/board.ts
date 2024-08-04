@@ -39,6 +39,22 @@ export async function getBoard(id: string) {
   }
 }
 
+export async function getBoardName(id: string) {
+  try {
+    if (!boards) await init();
+
+    const result = await boards.findOne(
+      { _id: new ObjectId(id) },
+      { projection: { name: 1 } }
+    );
+
+    return result?.name;
+  } catch (e) {
+    console.error("getBoardName error", e);
+    return [];
+  }
+}
+
 export async function createBoard(data: Partial<BoardDB>) {
   try {
     if (!boards) await init();
