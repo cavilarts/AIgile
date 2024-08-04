@@ -51,18 +51,8 @@ export default function Header() {
             ) : null}
           </>
           <NavbarItem>
-            <Link className="text-sky-400" href="/about">
+            <Link className="text-sky-400" href="#about">
               About
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link className="text-sky-400" href="/features">
-              Services
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link className="text-sky-400" href="/pricing">
-              Pricing
             </Link>
           </NavbarItem>
           <NavbarItem>
@@ -101,16 +91,6 @@ export default function Header() {
         <NavbarItem className="text-end">
           <Link className="text-sky-400" href="/about">
             About
-          </Link>
-        </NavbarItem>
-        <NavbarItem className="text-end">
-          <Link className="text-sky-400" href="/features">
-            Services
-          </Link>
-        </NavbarItem>
-        <NavbarItem className="text-end">
-          <Link className="text-sky-400" href="/pricing">
-            Pricing
           </Link>
         </NavbarItem>
       </NavbarMenu>
