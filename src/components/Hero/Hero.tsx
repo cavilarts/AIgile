@@ -13,8 +13,8 @@ export default async function Hero() {
     : null;
 
   return (
-    <section className="flex h-full">
-      <div className="relative mx-auto max-w-screen-xl px-4 sm:px-6 flex flex-col h-full justify-center items-center">
+    <section className="flex h-screen">
+      <div className="relative mx-auto max-w-screen-xl flex flex-col h-full justify-center items-center">
         <h1 className="text-3xl font-extrabold sm:text-5xl text-left sm:text-center">
           Untangle Requirements with AIgile:
           <strong className="block font-extrabold text-rose-300">
