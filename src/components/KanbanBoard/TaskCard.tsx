@@ -48,8 +48,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   if (!task) return null;
 
   return (
-    <>
-      <Card ref={dragRef} className="margin-bottom-8 transition-opacity-0.2s cursor-move" >
+    <div onClick={() => {
+          editModalDisclosure.onOpen();
+        }}>
+      <Card ref={dragRef} className="margin-bottom-8 transition-opacity-0.2s cursor-move"
+        
+      >
         <CardHeader className="relative overflow-visible flex justify-between items-center">
           <h5 className="font-bold text-large">{task.title}</h5>
 
@@ -112,7 +116,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       </Modal>
 
       <AddEditTaskForm columns={[column]} initialData={task} onSubmit={onEdit} mode={TaskAction.EDIT} modalDisclosure={editModalDisclosure} />
-    </>
+    </div>
   );
 };
 
