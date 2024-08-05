@@ -94,6 +94,8 @@ export default function ProjectPage({ params }: { params: { board: string } }) {
             title: column.name,
             tasks: column.tasks,
           }))}
+          boardName={data?.boardName}
+          projectName={data?.name}
           onColumnCreate={function (
             column: Omit<ColumnApi, "id" | "tasks">
           ): void {

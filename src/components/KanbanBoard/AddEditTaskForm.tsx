@@ -113,7 +113,6 @@ export const AddEditTaskForm: React.FC<AddTaskFormProps> = ({
 
   useMount(() => {
     if (initialData) {
-      console.log("initialData", initialData);
       if (initialData._id) setValue("taskId", String(initialData._id));
 
       setValue("title", initialData.title);

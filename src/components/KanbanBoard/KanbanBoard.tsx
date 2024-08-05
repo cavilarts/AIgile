@@ -6,6 +6,8 @@ import { Column } from "./Column";
 
 export type KanbanBoardProps = {
   columns: ColumnApi[];
+  boardName: string;
+  projectName: string;
   onTaskMove: (
     taskId: TaskId,
     sourceColumn: string,
@@ -22,6 +24,8 @@ export type KanbanBoardProps = {
 
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   columns,
+  boardName,
+  projectName,
   onTaskMove,
   onTaskEdit,
   onTaskDelete,
@@ -42,9 +46,11 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         </NavbarItem>
       </NavbarContent>
     ]}>
-
       <div className="h-full w-full">
-        <div className="flex overflow-x-auto space-x-4  p-4 w-full bg-none m-auto flex-no-wrap">
+        <div className="p-4 mb-4">
+          <h1 className="text-2xl font-bold mb-2 inline">{projectName}</h1> - <h2 className="text-xl text-gray-600 inline">{boardName}</h2>
+        </div>
+        <div className="flex overflow-x-auto space-x-4 p-4 w-full bg-none m-auto flex-no-wrap">
           {columns.map((column, index) => {
             if (!column) return null;
 
